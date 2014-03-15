@@ -1,3 +1,8 @@
+---
+papersize: a4paper
+classoption: oneside
+---
+
 \begin{abstract}
 
 The evolutionary development of processor architectures, requirement of
