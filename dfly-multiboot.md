@@ -298,10 +298,10 @@ operating systems due to two reasons.
 Firstly, when the specification was defined in 1995, the x86-64 was still
 to be unknown for the next 5 years.[^5]
 
-[^5]: According to [Wikipedia][wiki-amd64]: [AMD64 was] _announced in 1999 with a
+[^5]: According to Wikipedia: [AMD64][wiki:amd64] was _announced in 1999 with a
       full specification in August 2000_.
 
-[wiki-amd64]: http://en.wikipedia.org/wiki/X86-64#History_of_AMD64
+[wiki:amd64]: http://en.wikipedia.org/wiki/X86-64#History_of_AMD64
 
 Secondly, the AMD64 (the standard describing the x86-64 instruction set)
 requires the entry to the long mode be preceded
