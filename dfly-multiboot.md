@@ -1,6 +1,7 @@
 ---
 papersize: a4paper
 classoption: oneside
+linkcolor: black
 ---
 
 \begin{abstract}
