@@ -32,7 +32,7 @@ may have on the whole boot process.
 
 \pagenumbering{arabic}
 
-## Introduction
+# Introduction
 
 [Wikipedia states][wiki:os] that _an operating system (OS) is a collection
 of software that manages computer hardware resources and provides common
@@ -93,7 +93,7 @@ The contributions of this paper are following:
 
 <a name='booting-bsd' />
 
-## Booting a BSD-like operating system on the Intel x86 architecture
+# Booting a BSD-like operating system on the Intel x86 architecture
 
 The contents of this section are heavily (though not entirely)
 based on the outstanding work of the authors
@@ -104,7 +104,7 @@ and on the analysis of FreeBSD and DragonFly BSD source code.
 [arch-handbook]: http://www.freebsd.org/doc/en/books/arch-handbook/index.html
 [arch-handbook-boot]: http://www.freebsd.org/doc/en/books/arch-handbook/boot.html
 
-### BIOS
+## BIOS
 
 The [BIOS Boot Specification][biosspec] defines the behaviour
 of a PC (personal computer) just after power on when it is running
@@ -121,7 +121,7 @@ contained within them.
 
 [biosspec]: http://www.scs.stanford.edu/nyu/04fa/lab/specsbbs101.pdf
 
-### First stage: `boot0`
+## First stage: `boot0`
 
 The code contained in MBR is `boot0` - the first stage of the BSD bootloader.
 `boot0` hardly knows more than absolutely necessary to boot the next
@@ -137,7 +137,7 @@ first sector of that partition and runs it, i.e. it runs `boot2`[^1].
       i.e. finding and loading `boot2`,
       with the difference of being run from a floppy.
 
-### Second stage: `boot2`
+## Second stage: `boot2`
 
 `boot2` is aware of the possibility of multiple hard drives in the PC;
 it also understands the file system structures.
@@ -161,7 +161,7 @@ the hardware (disk geometry as detected by the BIOS), available memory,
 preloaded modules and the environment (variables configuring the kernel
 and the modules).
 
-### Third stage: `loader`
+## Third stage: `loader`
 
 The `loader`, already running in the protected mode, is actually quite a
 capable piece of software.
@@ -182,7 +182,7 @@ kernel).
       as there is simply no need to use more with today's amounts of
       available memory.
 
-### x86 kernel
+## x86 kernel
 
 Once loaded, the kernel must perform some initialization.
 After the basic register setup there are three operations it performs:
@@ -206,7 +206,7 @@ Then, two more functions are called: `init386` and `mi_startup`.
 `mi_startup` is the machine independent startup routine of the kernel
 which never returns -- it finalizes the boot process.
 
-### x86-64 kernel
+## x86-64 kernel
 
 On x86-64 initialization of the kernel is performed slightly differently
 and in fact is less of a hassle.
@@ -222,7 +222,7 @@ happens -- a lot of details are omitted.
 
 <a name='mb-grub' />
 
-## The Multiboot Specification and GRUB
+# The Multiboot Specification and GRUB
 
 The described boot procedure and software is battle proven and works well
 for FreeBSD as well as, with minor changes, DragonFly BSD.
@@ -265,7 +265,7 @@ experience from the boot to the desktop environment login screen.
 The availability of GRUB is a major step towards simplification of the
 boot process from the OS programmer point of view.
 
-## Booting DragonFly BSD with GRUB
+# Booting DragonFly BSD with GRUB
 
 The focus of this paper is to describe changes necessary to the DragonFly
 BSD operating system kernel to make it adhere to the Multiboot
@@ -274,7 +274,7 @@ Specification.
 The other aim of the paper is the description of enabling GRUB
 to read the custom DragonFly BSD partition table -- `disklabel64`.
 
-### Booting the 32 bit kernel
+## Booting the 32 bit kernel
 
 In case of the x86 variant of DFly (DragonFly BSD)
 the solution is straightforward.
@@ -289,7 +289,7 @@ platform dependent `init386` initialization procedure.
 The rest of the system should not need to be aware of what bootloader
 loaded the kernel.
 
-### The problem of Multiboot and x86-64
+## The problem of Multiboot and x86-64
 
 In case of the x86-64 architecture the problem is more complicated.
 The Multiboot Specification defines an interface only for loading 32 bit
@@ -327,7 +327,7 @@ the 64 bit addressable memory and run it;
 the kernel itself would be responsible for setting up the memory mapping
 scheme according to its own requirements.
 
-### The workaround
+## The workaround
 
 Given the aforementioned limitations of GRUB and the CPU the cleanest
 possible way of loading the 64 bit kernel is out of reach.
@@ -346,7 +346,7 @@ Implementation of this approach is yet to be carried out.
 
 <a name='making-grub-understand' />
 
-## Making GRUB understand `disklabel64`
+# Making GRUB understand `disklabel64`
 
 As already mentioned, GRUB is extensible with regard to the partition
 tables and filesystems it is able to understand.
@@ -386,7 +386,7 @@ to [is already included in GRUB][grub-dfly].
 
 [grub-dfly]: http://bzr.savannah.gnu.org/lh/grub/trunk/grub/revision/5011
 
-## Related work
+# Related work
 
 There is a number of projects revolving around the issue of bootstrapping.
 
@@ -441,7 +441,7 @@ beginning.
 The earliest version of the Multiboot Specification also predates the
 earliest version of UEFI (then known as Intel Boot Initiative) by 3 years.
 
-## Conclusions
+# Conclusions
 
 The evolutionary development of processor architectures, requirement of
 maintaining backwards compatibility and design errors lead to a lot of
@@ -466,7 +466,7 @@ However, the concept needs thorough evaluation.
 
 \newpage
 
-## Appendix A: `grub_partition_map` module stub <a name='appendix-a'/>
+# Appendix A: `grub_partition_map` module stub <a name='appendix-a'/>
 
 ````c
 #include <grub/disk.h>
