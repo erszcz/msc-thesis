@@ -20,11 +20,17 @@ may have on the whole boot process.
 
 \end{abstract}
 
+\setcounter{secnumdepth}{3}
+
+\pagenumbering{roman}
+
 \newpage
 
 \tableofcontents
 
 \newpage
+
+\pagenumbering{arabic}
 
 ## Introduction
 
