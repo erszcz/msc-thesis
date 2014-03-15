@@ -7,8 +7,5 @@ pdf: dfly-multiboot.pdf
 
 tex: dfly-multiboot.tex
 
-dfly-multiboot.pdf: dfly-multiboot.md preamble.tex title.tex
-	$(BUILD) -o $@ $<
-
-dfly-multiboot.tex: dfly-multiboot.md preamble.tex title.tex
+dfly-multiboot.pdf dfly-multiboot.tex: dfly-multiboot.md preamble.tex title.tex
 	$(BUILD) -o $@ $<
