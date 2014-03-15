@@ -1,7 +1,3 @@
-% Making DragonFly BSD Multiboot Capable
-% Radosław Szymczyszyn \<<r.szymczyszyn@gmail.com>\>
-% \today
-
 \begin{abstract}
 
 The evolutionary development of processor architectures, requirement of
