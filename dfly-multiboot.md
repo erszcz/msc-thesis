@@ -302,8 +302,18 @@ The focus of this paper is to describe changes necessary to the DragonFly
 BSD operating system kernel to make it adhere to the Multiboot
 Specification.
 
+TODO: declare why grub can't read disklabel
+
 The other aim of the paper is the description of enabling GRUB
 to read the custom DragonFly BSD partition table -- `disklabel64`.
+
+## How does GRUB identify the kernel image?
+
+TODO: describe embedding the multiboot header, linker script, asm declarations
+
+### Embedding the Multiboot header
+
+### Modifying the linker script
 
 ## Booting the 32 bit kernel
 
@@ -319,6 +329,10 @@ All in all the two entry points should converge before calling the
 platform dependent `init386` initialization procedure.
 The rest of the system should not need to be aware of what bootloader
 loaded the kernel.
+
+### Adjusting the entry point
+
+### Mounting the root file system
 
 
 <a name='making-grub-understand' />
