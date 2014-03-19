@@ -38,7 +38,7 @@ may have on the whole boot process.
 
 \pagenumbering{arabic}
 
-# Introduction
+# The Boot Process
 
 [Wikipedia states][wiki:os] that _an operating system (OS) is a collection
 of software that manages computer hardware resources and provides common
@@ -142,7 +142,7 @@ The [BIOS Boot Specification][biosspec] defines the behaviour
 of a PC (personal computer) just after power on when it is running
 in _real mode_.
 The real mode means that memory addresses are 20 bit wide which allows for
-addressing up to a 1MiB of memory. This must be enough for all software
+addressing up to 1MiB of memory. This must be enough for all software
 running prior to the processor being switched to _protected mode_.
 
 The value of _instruction pointer_ register just after the boot up points
@@ -231,8 +231,8 @@ in the chip.
 
 `create_pagetables` sets up the page table and after that enables paging.
 After doing that a fake return address is pushed onto the stack and return
-to that address is performed -- this is done to continue running in the
-virtualized address space.
+to that address is performed -- this is done to switch from running
+at low linear addresses and continue running in the virtualized address space.
 Then, two more functions are called: `init386` and `mi_startup`.
 `init386` does further platform dependent initialization of the chip.
 `mi_startup` is the machine independent startup routine of the kernel
