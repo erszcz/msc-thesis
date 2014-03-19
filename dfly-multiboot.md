@@ -110,6 +110,10 @@ and on the analysis of FreeBSD and DragonFly BSD source code.
 [arch-handbook]: http://www.freebsd.org/doc/en/books/arch-handbook/index.html
 [arch-handbook-boot]: http://www.freebsd.org/doc/en/books/arch-handbook/boot.html
 
+Though the description in this section is far from being simple,
+its every paragraph is only a simplification of what actually
+happens -- a lot of details are omitted.
+
 ## BIOS
 
 The [BIOS Boot Specification][biosspec] defines the behaviour
@@ -221,10 +225,6 @@ the long mode the CPU is already running in that mode and the jump
 to the kernel code is performed in the virtual address space.
 The kernel does the platform dependent setup and calls `mi_startup`
 (the machine independent startup).
-
-Though the description in this section is far from being simple,
-its every paragraph is only a simplification of what actually
-happens -- a lot of details are omitted.
 
 <a name='mb-grub' />
 
