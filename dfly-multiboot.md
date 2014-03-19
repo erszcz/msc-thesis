@@ -13,11 +13,15 @@ Abstracting away the boot time peculiarities and legacy cruft allows for
 simple and fast implementation of novel operating system concept
 prototypes, new hypervisors for the purpose of virtualization
 and improvement of the structure and maintainability of existing systems.
-I describe the Multiboot Specification which provides such an
-abstraction and how DragonFly BSD, a mature UNIX-derived operating
-system, can be modified to conform to that specification.
-I also pinpoint an issue with the modern x86-64 architecture
-and the negative and far-reaching impact a wrong CPU design decision
+I~describe the Multiboot Specification which provides such an
+abstraction and how DragonFly BSD, a~mature UNIX-derived operating
+system, can be modified to conform to that specification
+along with an implementation for the Intel 386 architecture.
+I~present the changes made to GRUB,
+a bootloader implementing the specification,
+in order to allow it to boot DragonFly BSD.
+I~also pinpoint an issue with the modern x86-64 architecture
+and the negative impact a~wrong CPU design decision
 may have on the whole boot process.
 
 \end{abstract}
