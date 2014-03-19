@@ -80,22 +80,44 @@ in [_The Multiboot Specification and GRUB_][mb-grub] section.
 
 The contributions of this paper are following:
 
-- Section [_Booting DragonFly BSD with GRUB_][dfly-w-grub]
-  contains a strong argument for the simplification of the boot process.
-  That simplification involves proper design of the interface
-  the system programmer must use in the processor startup sequence.
-  This will be based on a comparison of the boot process of the DragonFly BSD
-  operating system on the 32 and 64 bit variants of the Intel architecture.
-  Also covered will be the adjustments necessary to make the DragonFly BSD
-  kernel usable with a Multiboot compliant bootloader.
+- An approachable introduction to [_booting a BSD-like operating system
+  on the Intel x86 architecture_][booting-bsd].
+  This section should also make the need for simplification of the boot
+  process obvious.
 
-- A description of extending the GRUB bootloader
-  by writing a module for recognizing a new partition table type
-  in [_Making GRUB understand `disklabel64`_][making-grub-understand].
-  This contains an introduction to the GRUB module system.
+- The rationale behind [_the Multiboot Specification and GRUB_] which provide
+  an abstraction over the hardware specifics an operating system
+  programmer must overcome to bootstrap the system.
 
-[dfly-w-grub]: #dfly-w-grub
-[making-grub-understand]: #making-grub-understand
+  This section shows how GRUB makes the boot process seem simpler than it
+  really is.
+
+- Section [_DragonFly BSD and GRUB on x86_][dfly-x86]
+  provides a description of changes necessary to make the system conform
+  to the version of the specification targeted at the 32bit Intel
+  architecture.
+
+[dfly-x86]: #dfly-x86
+
+  In fact, this section describes all the changes which were applied to
+  the DragonFly BSD kernel in order to make it fully functional when booted
+  by~GRUB. These changes include, but are not limited to, adjusting the
+  kernel linker script, modifying the existing entry point written in
+  assembly language and finally enabling the system to interpret boot
+  information passed by GRUB in order to mount the root file system.
+
+  This also includes extending the GRUB bootloader
+  by~writing a module for recognizing a new partition table type.
+
+  This is the core part of this paper.
+
+- [_DragonFly BSD and GRUB on x86-64_][dfly-x64] covers why the same
+  approach can't be taken on the x86-64 architecture and how,
+  even in the light of these differences, the system could be modified
+  to work with GRUB on this architecture.
+
+[dfly-x64]: #dfly-x64
+
 
 <a name='booting-bsd' />
 
