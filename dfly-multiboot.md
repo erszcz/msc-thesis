@@ -293,7 +293,10 @@ experience from the boot to the desktop environment login screen.
 The availability of GRUB is a major step towards simplification of the
 boot process from the OS programmer point of view.
 
-# Booting DragonFly BSD with GRUB
+
+<a name="dfly-x86" />
+
+# DragonFly BSD and GRUB on x86
 
 The focus of this paper is to describe changes necessary to the DragonFly
 BSD operating system kernel to make it adhere to the Multiboot
@@ -317,7 +320,53 @@ platform dependent `init386` initialization procedure.
 The rest of the system should not need to be aware of what bootloader
 loaded the kernel.
 
-## The problem of Multiboot and x86-64
+
+<a name='making-grub-understand' />
+
+## Making GRUB understand `disklabel64`
+
+As already mentioned, GRUB is extensible with regard to the partition
+tables and filesystems it is able to understand.
+It is very important, because one piece of the puzzle is booting the
+kernel but another one is finding and loading it from the disk.
+
+Fortunately, the main filesystem used by DragonFly BSD is UFS (the Unix
+file system) which is one of the core traditional Unix technologies
+and is already supported by GRUB.
+
+Unfortunately, to get to the filesystem we must first understand the
+partition table.
+DragonFly BSD uses `disklabel64`, a custom variant of `disklabel` --
+the partitioning scheme used by other BSD flavours and SunOS.
+
+Extending GRUB to support a new partition table type is essentially a
+matter of writing a module in the C language.
+Depending on the module type it must implement a specific interface.
+A stub of a module adding support for a new partition table is available
+in [_Appendix A_][appendix-a].
+
+[appendix-a]: #appendix-a
+
+The module is compiled as a standalone object (`.o`) file and depending on
+the build configuration options either statically linked with the GRUB image
+or loaded on demand during the boot up sequence from a preconfigured
+location.
+
+As the `disklabel64` format is not described anywhere in the form of
+written documentation the GRUB implementation was closely based
+on the original header file found in the DragonFly BSD
+source tree (`sys/disklabel64.h`) and the behaviour of the userspace
+utility program `disklabel64`.
+
+The module responsible for reading `disklabel64` this section refers
+to [is already included in GRUB][grub-dfly].
+
+[grub-dfly]: http://bzr.savannah.gnu.org/lh/grub/trunk/grub/revision/5011
+
+
+<a name="dfly-x64" />
+
+# DragonFly BSD and GRUB on x86-64
 
 In case of the x86-64 architecture the problem is more complicated.
 The Multiboot Specification defines an interface only for loading 32 bit
@@ -372,47 +421,6 @@ mode and jump to the 64 bit kernel entry point.
 
 Implementation of this approach is yet to be carried out.
 
-<a name='making-grub-understand' />
-
-# Making GRUB understand `disklabel64`
-
-As already mentioned, GRUB is extensible with regard to the partition
-tables and filesystems it is able to understand.
-It is very important, because one piece of the puzzle is booting the
-kernel but another one is finding and loading it from the disk.
-
-Fortunately, the main filesystem used by DragonFly BSD is UFS (the Unix
-file system) which is one of the core traditional Unix technologies
-and is already supported by GRUB.
-
-Unfortunately, to get to the filesystem we must first understand the
-partition table.
-DragonFly BSD uses `disklabel64`, a custom variant of `disklabel` --
-the partitioning scheme used by other BSD flavours and SunOS.
-
-Extending GRUB to support a new partition table type is essentially a
-matter of writing a module in the C language.
-Depending on the module type it must implement a specific interface.
-A stub of a module adding support for a new partition table is available
-in [_Appendix A_][appendix-a].
-
-[appendix-a]: #appendix-a
-
-The module is compiled as a standalone object (`.o`) file and depending on
-the build configuration options either statically linked with the GRUB image
-or loaded on demand during the boot up sequence from a preconfigured
-location.
-
-As the `disklabel64` format is not described anywhere in the form of
-written documentation the GRUB implementation was closely based
-on the original header file found in the DragonFly BSD
-source tree (`sys/disklabel64.h`) and the behaviour of the userspace
-utility program `disklabel64`.
-
-The module responsible for reading `disklabel64` this section refers
-to [is already included in GRUB][grub-dfly].
-
-[grub-dfly]: http://bzr.savannah.gnu.org/lh/grub/trunk/grub/revision/5011
 
 # Related work
 
