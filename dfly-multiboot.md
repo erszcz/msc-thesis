@@ -367,10 +367,6 @@ the partitioning scheme used by other BSD flavours and SunOS.
 Extending GRUB to support a new partition table type is essentially a
 matter of writing a module in the C language.
 Depending on the module type it must implement a specific interface.
-A stub of a module adding support for a new partition table is available
-in [_Appendix A_][appendix-a].
-
-[appendix-a]: #appendix-a
 
 The module is compiled as a standalone object (`.o`) file and depending on
 the build configuration options either statically linked with the GRUB image
