@@ -58,7 +58,7 @@ beforehand location (e.g. a hard drive or a network interface) and running it.
 That program is called _the bootloader_ and is responsible
 for loading the operating system.
 A more detailed description of the process is given in
-[_\ref{booting-a-bsd-system}{\ }Booting a BSD system_](#booting-a-bsd-system).
+[_\ref{xr:booting-bsd}{\ }Booting a BSD system_](#xr:booting-bsd).
 
 The multitude of problems involved in implementing a bootloader for each
 combination of an operating system and hardware platform in use led Bryan Ford
@@ -77,7 +77,7 @@ More on the specification and GRUB is available in
 
 The contributions of this paper are following:
 
--   [_\ref{booting-a-bsd-system}{\ }Booting a BSD system_](#booting-a-bsd-system)
+-   [_\ref{xr:booting-bsd}{\ }Booting a BSD system_](#xr:booting-bsd)
     gives an approachable introduction to the boot process of a BSD-like
     operating system on the Intel x86 architecture.
     This section should also make the need for simplification of the boot
@@ -117,8 +117,11 @@ The contributions of this paper are following:
 
 [dfly-x64]: #dfly-x64
 
+<a name="xr:booting-bsd" />
 
 # Booting a BSD system
+
+\label{xr:booting-bsd}
 
 The contents of this section are heavily (though not entirely)
 based on the outstanding work of the authors
