@@ -68,13 +68,12 @@ operating system. One implementation of the specification is [GRUB][ext:grub] --
 the bootloader which came to existence thanks to the effort of [GNU][ext:gnu]
 and is one of the most widely used bootloaders in the FOSS
 (Free and Open Source Software) world.
-More on the specification and GRUB is available
-in [_The Multiboot Specification and GRUB_][mb-grub] section.
+More on the specification and GRUB is available in
+[_\ref{xr:mb-grub}{\ }The Multiboot Specification and GRUB_](#xr:mb-grub) section.
 
 [ext:multiboot]: http://www.gnu.org/software/grub/manual/multiboot/multiboot.html
 [ext:grub]: http://www.gnu.org/software/grub/
 [ext:gnu]: https://www.gnu.org/
-[mb-grub]: #mb-grub
 
 The contributions of this paper are following:
 
@@ -84,7 +83,8 @@ The contributions of this paper are following:
     This section should also make the need for simplification of the boot
     process obvious.
 
--   The rationale behind [_the Multiboot Specification and GRUB_][mb-grub]
+-   The rationale behind [_the Multiboot Specification and GRUB_](#xr:mb-grub)
+    \text{(section \ref{xr:mb-grub})}
     which provide an abstraction over the hardware specifics an operating
     system programmer must overcome to bootstrap the system.
 
@@ -245,9 +245,11 @@ to the kernel code is performed in the virtual address space.
 The kernel does the platform dependent setup and calls `mi_startup`
 (the machine independent startup).
 
-<a name='mb-grub' />
+<a name='xr:mb-grub' />
 
 # The Multiboot Specification and GRUB
+
+\label{xr:mb-grub}
 
 The described boot procedure and software is battle proven and works well
 for FreeBSD as well as, with minor changes, DragonFly BSD.
