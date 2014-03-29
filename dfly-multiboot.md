@@ -348,8 +348,6 @@ loaded the kernel.
 #### Mounting the root file system
 
 
-<a name='making-grub-understand' />
-
 ### Making GRUB understand `disklabel64`
 
 As already mentioned, GRUB is extensible with regard to the partition
