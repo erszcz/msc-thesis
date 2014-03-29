@@ -40,7 +40,7 @@ may have on the whole boot process.
 
 # The Boot Process
 
-[Wikipedia states][wiki:os] that _an operating system (OS) is a collection
+[Wikipedia states][ext:wiki-os] that _an operating system (OS) is a collection
 of software that manages computer hardware resources and provides common
 services for computer programs._
 In other words, an operating system is a computer program which allows
@@ -48,7 +48,7 @@ other programs to run. What, then, allows the operating system to run if
 itself it cannot rely on an operating system?
 Especially, what does start the operating system?
 
-[wiki:os]: http://en.wikipedia.org/wiki/Operating_system
+[ext:wiki-os]: http://en.wikipedia.org/wiki/Operating_system
 
 The problem at hand is as old as computing itself. So is the concept
 of _bootstrapping_ or, to put it simply, starting the computer.
@@ -64,18 +64,18 @@ A more detailed description of the process is given in
 
 The multitude of problems involved in implementing a bootloader for each
 combination of an operating system and hardware platform in use led Bryan Ford
-and Erich Stefan Boleyn to devise [the Multiboot Specification][multiboot].
+and Erich Stefan Boleyn to devise [the Multiboot Specification][ext:multiboot].
 The specification defines an interface between a universal bootloader and an
-operating system. One implementation of the specification is [GRUB][grub] --
-the bootloader which came to existence thanks to the effort of [GNU][gnu] and is
-one of the most widely used bootloaders in the FOSS
+operating system. One implementation of the specification is [GRUB][ext:grub] --
+the bootloader which came to existence thanks to the effort of [GNU][ext:gnu]
+and is one of the most widely used bootloaders in the FOSS
 (Free and Open Source Software) world.
 More on the specification and GRUB is available
 in [_The Multiboot Specification and GRUB_][mb-grub] section.
 
-[multiboot]: http://www.gnu.org/software/grub/manual/multiboot/multiboot.html
-[grub]: http://www.gnu.org/software/grub/
-[gnu]: https://www.gnu.org/
+[ext:multiboot]: http://www.gnu.org/software/grub/manual/multiboot/multiboot.html
+[ext:grub]: http://www.gnu.org/software/grub/
+[ext:gnu]: https://www.gnu.org/
 [mb-grub]: #mb-grub
 
 The contributions of this paper are following:
@@ -125,12 +125,12 @@ The contributions of this paper are following:
 
 The contents of this section are heavily (though not entirely)
 based on the outstanding work of the authors
-of the [FreeBSD Architecture Handbook][arch-handbook]; namely on chapter
-[1. Bootstrapping and Kernel Initialization][arch-handbook-boot]
+of the [FreeBSD Architecture Handbook][ext:arch-handbook]; namely on chapter
+[1. Bootstrapping and Kernel Initialization][ext:arch-handbook-boot]
 and on the analysis of FreeBSD and DragonFly BSD source code.
 
-[arch-handbook]: http://www.freebsd.org/doc/en/books/arch-handbook/index.html
-[arch-handbook-boot]: http://www.freebsd.org/doc/en/books/arch-handbook/boot.html
+[ext:arch-handbook]: http://www.freebsd.org/doc/en/books/arch-handbook/index.html
+[ext:arch-handbook-boot]: http://www.freebsd.org/doc/en/books/arch-handbook/boot.html
 
 Though the description in this section is far from being simple,
 its every paragraph is only a simplification of what actually
@@ -138,7 +138,7 @@ happens -- a lot of details are omitted.
 
 ## BIOS
 
-The [BIOS Boot Specification][biosspec] defines the behaviour
+The [BIOS Boot Specification][ext:biosspec] defines the behaviour
 of a PC (personal computer) just after power on when it is running
 in _real mode_.
 The real mode means that memory addresses are 20 bit wide which allows for
@@ -151,7 +151,7 @@ located. The last thing done by this code is the loading of 512 bytes from
 the MBR (Master Boot Record -- usually the hard drive) and running the code
 contained within them.
 
-[biosspec]: http://www.scs.stanford.edu/nyu/04fa/lab/specsbbs101.pdf
+[ext:biosspec]: http://www.scs.stanford.edu/nyu/04fa/lab/specsbbs101.pdf
 
 ## First stage: `boot0`
 
@@ -373,9 +373,9 @@ source tree (`sys/disklabel64.h`) and the behaviour of the userspace
 utility program `disklabel64`.
 
 The module responsible for reading `disklabel64` this section refers
-to [is already included in GRUB][grub-dfly].
+to [is already included in GRUB][ext:grub-dfly].
 
-[grub-dfly]: http://bzr.savannah.gnu.org/lh/grub/trunk/grub/revision/5011
+[ext:grub-dfly]: http://bzr.savannah.gnu.org/lh/grub/trunk/grub/revision/5011
 
 
 <a name="dfly-x64" />
@@ -389,10 +389,10 @@ operating systems due to two reasons.
 Firstly, when the specification was defined in 1995, the x86-64 was still
 to be unknown for the next 5 years.[^5]
 
-[^5]: According to Wikipedia: [AMD64][wiki:amd64] was _announced in 1999 with a
-      full specification in August 2000_.
+[^5]: According to Wikipedia: [AMD64][ext:wiki-amd64] was _announced
+      in 1999 with a full specification in August 2000_.
 
-[wiki:amd64]: http://en.wikipedia.org/wiki/X86-64#History_of_AMD64
+[ext:wiki-amd64]: http://en.wikipedia.org/wiki/X86-64#History_of_AMD64
 
 Secondly, the AMD64 (the standard describing the x86-64 instruction set)
 requires the entry to the long mode be preceded
@@ -440,7 +440,7 @@ Implementation of this approach is yet to be carried out.
 
 There is a number of projects revolving around the issue of bootstrapping.
 
-[Coreboot] is a BIOS firmware replacement.
+[Coreboot][ext:coreboot] is a BIOS firmware replacement.
 It is based on the concept of _payloads_ (standalone ELF executables)
 which it loads in order to offer a specific set of functionality required
 by the software which is to run later.
@@ -455,9 +455,9 @@ it is intended for use by hardware manufacturers in their products
 (motherboards or systems-on-chip) in contrast to GRUB which is installable
 on a personal computer by a power-user.
 
-[Coreboot]: http://www.coreboot.org/
+[ext:coreboot]: http://www.coreboot.org/
 
-[UEFI] (Unified Extensible Firmware Interface) is a specification of an
+[UEFI][ext:uefi] (Unified Extensible Firmware Interface) is a specification of an
 interface between an operating system and a platform firmware.
 The initial version was created in 1998 as _Intel Boot Initiative_,
 later renamed to _Extensible Firmware Interface_.
@@ -465,7 +465,7 @@ Since 2005 the specification is officially owned by the _Unified EFI
 Forum_ which leads its development.
 The latest version is 2.4 approved in July 2013.
 
-[UEFI]: http://www.uefi.org/home/
+[ext:uefi]: http://www.uefi.org/home/
 
 UEFI introduces processor architecture independence, meaning that the
 firmware may run on a number of different processor types: 32 or 64 bit
