@@ -294,28 +294,42 @@ The availability of GRUB is a major step towards simplification of the
 boot process from the OS programmer point of view.
 
 
+# DragonFly BSD and GRUB
+
+The focus of this paper is to describe all changes necessary
+to the DragonFly BSD kernel and the GRUB bootloader to make both
+interoperate as described in the Multiboot specification.
+In other words, all the changes necessary to make GRUB load and boot
+DragonFly BSD using the Multiboot protocol.
+This might lead to the question --
+can GRUB boot DragonFly BSD using any other protocol?
+It turns out that it can.
+
+
+## State of the Art
+
+TODO: chainloading
+
+
 <a name="dfly-x86" />
 
-# DragonFly BSD and GRUB on x86
+## DragonFly BSD and GRUB on x86
 
-The focus of this paper is to describe changes necessary to the DragonFly
-BSD operating system kernel to make it adhere to the Multiboot
-Specification.
 
 TODO: declare why grub can't read disklabel
 
 The other aim of the paper is the description of enabling GRUB
 to read the custom DragonFly BSD partition table -- `disklabel64`.
 
-## How does GRUB identify the kernel image?
+### How does GRUB identify the kernel image?
 
 TODO: describe embedding the multiboot header, linker script, asm declarations
 
-### Embedding the Multiboot header
+#### Embedding the Multiboot header
 
-### Modifying the linker script
+#### Modifying the linker script
 
-## Booting the 32 bit kernel
+### Booting the 32 bit kernel
 
 In case of the x86 variant of DFly (DragonFly BSD)
 the solution is straightforward.
@@ -330,14 +344,14 @@ platform dependent `init386` initialization procedure.
 The rest of the system should not need to be aware of what bootloader
 loaded the kernel.
 
-### Adjusting the entry point
+#### Adjusting the entry point
 
-### Mounting the root file system
+#### Mounting the root file system
 
 
 <a name='making-grub-understand' />
 
-## Making GRUB understand `disklabel64`
+### Making GRUB understand `disklabel64`
 
 As already mentioned, GRUB is extensible with regard to the partition
 tables and filesystems it is able to understand.
@@ -380,7 +394,7 @@ to [is already included in GRUB][ext:grub-dfly].
 
 <a name="dfly-x64" />
 
-# DragonFly BSD and GRUB on x86-64
+## DragonFly BSD and GRUB on x86-64
 
 In case of the x86-64 architecture the problem is more complicated.
 The Multiboot Specification defines an interface only for loading 32 bit
@@ -418,7 +432,7 @@ the 64 bit addressable memory and run it;
 the kernel itself would be responsible for setting up the memory mapping
 scheme according to its own requirements.
 
-## The workaround
+### The workaround
 
 Given the aforementioned limitations of GRUB and the CPU the cleanest
 possible way of loading the 64 bit kernel is out of reach.
