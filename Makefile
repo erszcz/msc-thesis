@@ -2,7 +2,7 @@ BUILD := pandoc --include-in-header=preamble.tex \
 				--include-before-body=title.tex \
 				-S
 
-all: pdf
+all: pdf html
 
 pdf: dfly-multiboot.pdf
 
