@@ -91,7 +91,7 @@ The contributions of this paper are following:
     This section shows how GRUB makes the boot process seem simpler than it
     really is.
 
--   Section [_DragonFly BSD and GRUB on x86_][dfly-x86]
+-   Section [_\ref{xr:dfly-x86}{\ }DragonFly BSD and GRUB on x86_](#xr:dfly-x86)
     provides a description of changes necessary to make the system conform
     to the version of the specification targeted at the 32bit Intel
     architecture.
@@ -108,14 +108,10 @@ The contributions of this paper are following:
 
     This is the core part of this paper.
 
-[dfly-x86]: #dfly-x86
-
--   [_DragonFly BSD and GRUB on x86-64_][dfly-x64] covers why the same
-    approach can't be taken on the x86-64 architecture and how,
-    even in the light of these differences, the system could be modified
-    to work with GRUB on this architecture.
-
-[dfly-x64]: #dfly-x64
+-   [_\ref{xr:dfly-x64}{\ }DragonFly BSD and GRUB on x86-64_](#xr:dfly-x64)
+    covers why the same approach can't be taken on the x86-64 architecture
+    and how, even in the light of these differences,
+    the system could be modified to work with GRUB on this architecture.
 
 <a name="xr:booting-bsd" />
 
@@ -313,10 +309,11 @@ It turns out that it can.
 TODO: chainloading
 
 
-<a name="dfly-x86" />
+<a name="xr:dfly-x86" />
 
 ## DragonFly BSD and GRUB on x86
 
+\label{xr:dfly-x86}
 
 TODO: declare why grub can't read disklabel
 
@@ -394,9 +391,11 @@ to [is already included in GRUB][ext:grub-dfly].
 [ext:grub-dfly]: http://bzr.savannah.gnu.org/lh/grub/trunk/grub/revision/5011
 
 
-<a name="dfly-x64" />
+<a name="xr:dfly-x64" />
 
 ## DragonFly BSD and GRUB on x86-64
+
+\label{xr:dfly-x64}
 
 In case of the x86-64 architecture the problem is more complicated.
 The Multiboot Specification defines an interface only for loading 32 bit
