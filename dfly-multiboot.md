@@ -306,7 +306,33 @@ It turns out that it can.
 
 ## State of the Art
 
-TODO: chainloading
+Besides loading and booting operating system kernels,
+GRUB is capable of so called _chain loading_.
+This is a technique of substituting the memory contents of the running program
+with a new program and passing it the control flow.
+The UNIX `exec(2)` system call is an application of the same technique.
+
+By chain loading GRUB is able to load other bootloaders which in turn
+might boot operating systems that GRUB itself can't
+(e.g. Microsoft Windows) or perform specific configuration
+of the environment before running some exotic kernel with unusual requirements.
+
+That is the approach commonly used with many BSD flavours
+(of which only NetBSD supports the Multiboot protocol)
+and DragonFly BSD is not an exception.
+That is, the only way to boot DragonFly BSD using GRUB before starting
+this project was to make it load `dloader` and delegate to it the rest of the
+boot process.
+
+However, this defeats the purpose of Multiboot and a uniform
+OS-kernel interface.
+The hypothetical gain of decreased maintenance effort thanks
+to one universal bootloader doesn't apply anymore due to the reliance
+on `dloader`.
+Neither the seamless graphical transition from power-on to useful desktop
+is achievable when relying on chain loading.
+
+Therefore, chain loading is unsatisfactory.
 
 
 <a name="xr:dfly-x86" />
