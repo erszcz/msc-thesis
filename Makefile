@@ -1,6 +1,9 @@
 BUILD := pandoc --include-in-header=preamble.tex \
 				--include-before-body=title.tex \
-				--smart
+				--standalone \
+				--smart \
+				--biblio lit.bib \
+				--csl chicago-author-date.csl
 
 all: pdf html
 
