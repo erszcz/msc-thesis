@@ -630,3 +630,13 @@ TODO: embed bibtex or whatever makes sense, for now it's just copy-n-paste
 ## More refs
 
 #. asm64-handout.pdf - AT&T asm syntax examples, lot of refs
+
+
+TODO: clean up the references/citations stuff up
+
+[see @hsudfly]
+
+@hsudfly states some stuff.
+
+
+# References
