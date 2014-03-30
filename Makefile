@@ -1,6 +1,6 @@
 BUILD := pandoc --include-in-header=preamble.tex \
 				--include-before-body=title.tex \
-				-S
+				--smart
 
 all: pdf html
 
