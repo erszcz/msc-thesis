@@ -282,7 +282,7 @@ Other motives behind the specification are:
 The bootloader implementing the Multiboot Specification is GNU GRUB.
 Thanks to the modular architecture and clever design,
 GRUB is able to run on multiple hardware platforms,
-support a range of devices, partition table schemes and filesystems
+support a range of devices, partition table schemes and file systems
 and load different operating systems.
 Is is also possible to use it as a Coreboot payload.
 GRUB also sports a modern graphical user interface for a seamless user
