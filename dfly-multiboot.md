@@ -306,11 +306,15 @@ It turns out that it can.
 
 ## State of the Art
 
-Besides loading and booting operating system kernels,
+Besides[^5] loading and booting operating system kernels,
 GRUB is capable of so called _chain loading_.
 This is a technique of substituting the memory contents of the running program
 with a new program and passing it the control flow.
 The UNIX `exec(2)` system call is an application of the same technique.
+
+[^5]: In fact it's not true that GRUB can chain load besides booting OS kernels.
+      Chain loading is _how_ it boots both those kernels
+      and loads other bootloaders.
 
 By chain loading GRUB is able to load other bootloaders which in turn
 might boot operating systems that GRUB itself can't
@@ -422,9 +426,9 @@ The Multiboot Specification defines an interface only for loading 32 bit
 operating systems due to two reasons.
 
 Firstly, when the specification was defined in 1995, the x86-64 was still
-to be unknown for the next 5 years.[^5]
+to be unknown for the next 5 years.[^6]
 
-[^5]: According to Wikipedia: [AMD64][ext:wiki-amd64] was _announced
+[^6]: According to Wikipedia: [AMD64][ext:wiki-amd64] was _announced
       in 1999 with a full specification in August 2000_.
 
 [ext:wiki-amd64]: http://en.wikipedia.org/wiki/X86-64#History_of_AMD64
