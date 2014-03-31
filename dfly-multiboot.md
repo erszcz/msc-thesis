@@ -363,7 +363,7 @@ TODO: there could be an appendix on BSD partitioning-related parlance:
 GRUB is extensible with regard to the partition tables and file systems
 it is able to understand.
 Although the variants of `disklabel` used by disparate BSD flavours differ,
-all of them have already been supported bu GRUB before this project was started.
+all of them have already been supported by GRUB before this project was started.
 Unfortunately, that wasn't the case for DragonFly BSD's `disklabel64`.
 It is very important, because one piece of the puzzle is booting the
 kernel but another one is finding and loading it from the disk.
