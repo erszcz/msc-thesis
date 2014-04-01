@@ -455,14 +455,14 @@ the previous section.
 In order to make the new module build along with the rest of GRUB
 a few changes had to be introduced:
 
-- modifying `Makefile.util.def` to include a reference
+- modification of `Makefile.util.def` to include a reference
   to `grub-core/partmap/dfly.c`,
-- modifying `grub-core/Makefile.core.def` to include a reference
+- modification of `grub-core/Makefile.core.def` to include a reference
   to `grub-core/partmap/dfly.c` and indicate that the name
   of the loadable GRUB module is `part_dfly` (this is the name usable from
   GRUB shell),
-- adding `grub-core/partmap/dfly.c` itself with `disklabel64` read support,
-- adding automatic tests of the new code and auxiliary files in `tests/`.
+- addition of `grub-core/partmap/dfly.c` with `disklabel64` read support,
+- addition of automatic tests of the new code and auxiliary files in `tests/`.
 
 `grub-core/partmap/dfly.c` contains the definitions of `disklabel64`
 on-disk structures, a single callback function called by GRUB from outside
