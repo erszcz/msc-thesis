@@ -28,8 +28,6 @@ may have on the whole boot process.
 
 \setcounter{secnumdepth}{3}
 
-\pagenumbering{roman}
-
 \newpage
 
 \tableofcontents
