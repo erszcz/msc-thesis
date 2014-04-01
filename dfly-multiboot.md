@@ -394,13 +394,172 @@ That is one of the main contributions of the project this paper is about.
 [ext:grub-dfly]: http://git.savannah.gnu.org/cgit/grub.git/commit/?id=1e908b34a6c13ac04362a1c71799f2bf31908760
 
 
+### GRUB source code organization
+
+During this project, the revision control system of GNU GRUB changed from
+[Bazaar][ext:bzr] to [Git][ext:git]. As of writing this paper, the code
+is located at [http://git.savannah.gnu.org/grub.git][ext:grub-git].
+
+[ext:bzr]: http://bazaar.canonical.com/en/
+[ext:git]: http://git-scm.com/
+[ext:grub-git]: http://git.savannah.gnu.org/grub.git
+
+GRUB uses, as one might expect, GNU Autotools as its build system.
+Since the source tree, while well organized,
+might be intimidating at first sight,
+a short overview of its contents follows.
+
+The project comes with a set of helper utilities meant to be run from a
+fully functional operating system. These are, among others, `grub-file`,
+`grub-install`, `grub-mkrescue`. The last one is particularly useful for
+creating file system images containing a configured and installed GRUB
+with a set of arbitrary files, e.g. a development kernel.
+Use of this command greatly simplifies and speeds up the development process.
+All the code meant to be run from an operating system is located
+in the main project directory.
+
+Code intended to be run at boot time is located under `grub-core/`.
+In general, the structure follows the `grub-core/SUBSYSTEM/ARCH/` pattern,
+where `grub-core/SUBSYSTEM/` contains generic code of a given subsystem,
+while each `grub-core/SUBSYSTEM/ARCH/` subdirectory contains platform
+specific details. Some of the subsystems are:
+
+- `boot/` -- boot support of GRUB itself,
+  e.g. the code which runs just after GRUB is loaded by BIOS on an x86 machine,
+- `commands/` -- implementation of commands available in the GRUB shell,
+- `fs/` -- file system support,
+  e.g. `btrfs`, `ext2`, `fat`, `ufs`, `xfs`,
+- `gfxmenu/` -- graphical menu for choosing from the available boot options,
+- `loader/` -- loaders for different kernels and boot protocols,
+  e.g. Mach, Multiboot, XNU (i.e. the Darwin / MacOS X kernel),
+- `partmap/` -- partition table support,
+  e.g. `apple`, `bsdlabel`, `gpt`, `msdos`,
+- `term/` -- support for a textual interface through a serial line or
+  in a graphical mode,
+- `video/` -- graphical mode support for different platforms and devices.
+
+It is worth noting that GRUB deliberately contains almost no code for
+writing data to file systems -- that's a guarantee that it can't be
+responsible for any file system corruption.
+
+
+<a name="xr:dfly.c" />
+
+### `part_dfly` GRUB module implementation
+
+\label{xr:dfly.c}
+
+The newly added support for `disklabel64` partitioning scheme was located
+in `grub-core/partmap/dfly.c` file as could be partially anticipated from
+the previous section.
+In order to make the new module build along with the rest of GRUB
+a few changes had to be introduced:
+
+- modifying `Makefile.util.def` to include a reference
+  to `grub-core/partmap/dfly.c`,
+- modifying `grub-core/Makefile.core.def` to include a reference
+  to `grub-core/partmap/dfly.c` and indicate that the name
+  of the loadable GRUB module is `part_dfly` (this is the name usable from
+  GRUB shell),
+- adding `grub-core/partmap/dfly.c` itself with `disklabel64` read support,
+- adding automatic tests of the new code and auxiliary files in `tests/`.
+
+`grub-core/partmap/dfly.c` contains the definitions of `disklabel64`
+on-disk structures, a single callback function called by GRUB from outside
+the module and some initialization and finalization boilerplate code.
+
+The first structure actually is _the disklabel_, i.e. a header containing
+some meta information about the disk along with a table of entries
+describing the consecutive partitions:
+
+```C
+/* Full entry is 200 bytes however we really care only
+   about magic and number of partitions which are in first 16 bytes.
+   Avoid using too much stack.  */
+struct grub_partition_disklabel64
+{
+  grub_uint32_t   magic;
+#define GRUB_DISKLABEL64_MAGIC        ((grub_uint32_t)0xc4464c59)
+  grub_uint32_t   crc;
+  grub_uint32_t   unused;
+  grub_uint32_t   npartitions;
+};
+```
+
+As can be seen from the above listing, only fields strictly necessary
+to enable read support of the disklabel are included in the structure
+definition.
+This is due to two guides -- the limitations of the embedded environment
+GRUB is running in and the design decision that GRUB ought not to have
+write support of any on-disk data for safety and security reasons.
+
+The second structure is a disklabel entry, i.e. a description of a
+single partition:
+
+```C
+/* Full entry is 64 bytes however we really care only
+   about offset and size which are in first 16 bytes.
+   Avoid using too much stack.  */
+#define GRUB_PARTITION_DISKLABEL64_ENTRY_SIZE 64
+struct grub_partition_disklabel64_entry
+{
+  grub_uint64_t boffset;
+  grub_uint64_t bsize;
+};
+```
+
+Again, full read-write support would require full details of the structure
+to be present.
+
+Signature of the callback function defined in `dfly.c` is as follows:
+
+```C
+static grub_err_t
+dfly_partition_map_iterate (grub_disk_t disk,
+                            grub_partition_iterate_hook_t hook,
+                            void *hook_data)
+```
+
+This function is called in a loop implemented in GRUB framework code.
+
+In general, GRUB is able to handle nested partition tables,
+which are quite common on the personal computer (PC) x86 architecture.
+It's customary, that a PC drive is partitioned using an MS-DOS partition table,
+which supports up to 4 primary partitions and significantly more logical
+partitions on an extended partition.
+
+A bare disk would be referred to as `(hd0)` by GRUB; the second MS-DOS
+partition on a disk as `(hd0,msdos2)` (please note that disks are
+counted from 0 while partitions from 1),
+while the first DragonFly BSD subpartition of that MS-DOS
+partition as `(hd0,msdos2,dfly1)`.
+
+In this light, it should be clearer how the GRUB partition recognition
+loop mentioned above works.
+Each partition type callback (e.g. `dfly_partition_map_iterate`,
+`grub_partition_msdos_iterate`, ...) is first
+run on the raw device to find a partition table.
+Then, consecutively, on each partition found in the table
+(by using the `grub_partition_iterate_hook_t hook` parameter).
+Such a discovery procedure leads to at most two level deep partition nesting
+as in the `(hd0,msdos2,dfly1)` example.
+
+The automatic partition table and file system discovery tests located
+in `tests/` directory of GRUB source tree rely on GNU Parted.
+Being a partitioning utility, Parted, unlike GRUB, supports full read
+and write access to a number of partition table and file system formats.
+Unfortunately, `disklabel64` is not one of them.
+In order to enable automatic tests of the `part_dfly` module it was necessary
+to supply a predefined disk image containing the relevant disklabel.
+Two such images were prepared: one with an MS-DOS partition table
+and one with a DragonFly BSD `disklabel64`.
+
+
 <a name="xr:dfly-x86" />
 
 ## DragonFly BSD and GRUB on x86
 
 \label{xr:dfly-x86}
-
-TODO: declare why grub can't read disklabel
 
 The other aim of the paper is the description of enabling GRUB
 to read the custom DragonFly BSD partition table -- `disklabel64`.
