@@ -36,7 +36,7 @@ may have on the whole boot process.
 
 \pagenumbering{arabic}
 
-# The Boot Process
+# Introduction
 
 [Wikipedia states][ext:wiki-os] that _an operating system (OS) is a collection
 of software that manages computer hardware resources and provides common
@@ -89,7 +89,7 @@ The contributions of this paper are following:
     This section shows how GRUB makes the boot process seem simpler than it
     really is.
 
--   Section [_\ref{xr:dfly-x86}{\ }DragonFly BSD and GRUB on x86_](#xr:dfly-x86)
+-   Section [_\ref{xr:dfly-x86}{\ }Booting DragonFly BSD with GRUB on x86_](#xr:dfly-x86)
     provides a description of changes necessary to make the system conform
     to the version of the specification targeted at the 32bit Intel
     architecture.
@@ -106,7 +106,7 @@ The contributions of this paper are following:
 
     This is the core part of this paper.
 
--   [_\ref{xr:dfly-x64}{\ }DragonFly BSD and GRUB on x86-64_](#xr:dfly-x64)
+-   [_\ref{xr:dfly-x64}{\ }Booting DragonFly BSD with GRUB on x86-64_](#xr:dfly-x64)
     covers why the same approach can't be taken on the x86-64 architecture
     and how, even in the light of these differences,
     the system could be modified to work with GRUB on this architecture.
@@ -290,7 +290,7 @@ The availability of GRUB is a major step towards simplification of the
 boot process from the OS programmer point of view.
 
 
-# DragonFly BSD and GRUB
+# Booting DragonFly BSD with GRUB
 
 The focus of this paper is to describe all changes necessary
 to the DragonFly BSD kernel and the GRUB bootloader to make both
@@ -557,7 +557,7 @@ and one with a DragonFly BSD `disklabel64`.
 
 <a name="xr:dfly-x86" />
 
-## DragonFly BSD and GRUB on x86
+## Booting DragonFly BSD with GRUB on x86
 
 \label{xr:dfly-x86}
 
@@ -594,7 +594,7 @@ loaded the kernel.
 
 <a name="xr:dfly-x64" />
 
-## DragonFly BSD and GRUB on x86-64
+## Booting DragonFly BSD with GRUB on x86-64
 
 \label{xr:dfly-x64}
 
