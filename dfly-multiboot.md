@@ -561,14 +561,57 @@ and one with a DragonFly BSD `disklabel64`.
 
 \label{xr:dfly-x86}
 
-The other aim of the paper is the description of enabling GRUB
-to read the custom DragonFly BSD partition table -- `disklabel64`.
+Conceptually, enabling GRUB to boot DragonFly BSD is relatively simple
+and involves the following steps:
+
+- enabling GRUB to identify the kernel image as Multiboot compliant,
+- adding an entry point to which GRUB will perform a jump when the kernel
+  image is loaded and the environment is set up,
+- once in the kernel, interpreting the information passed in by GRUB
+  and performing any relevant setup to successfully start up the system.
+
+However, things get hairy, when we get to the details.
+The foremost issue is compatibility with the existing booting strategy.
+In other words, all changes done to the kernel must be backwards
+compatible with `dloader` not to break the already existing boot path.
+
+The following sections describe in detail how the listed steps were
+performed, taking the above consideration into account, for the `pc32`
+variant of DragonFly BSD kernel, i.e. for the Intel x86 platform.
 
 ### How does GRUB identify the kernel image?
 
-TODO: describe embedding the multiboot header, linker script, asm declarations
+TODO: refer to Multiboot using Pandoc Markdow quotation
+
+The Multiboot specification states that:
+
+> [an] OS image must contain an additional header called Multiboot header,
+> besides the headers of the format used by the OS image. The Multiboot
+> header must be contained completely within the first 8192 bytes of the OS
+> image, and must be longword (32-bit) aligned. In general, it should come
+> as early as possible, and may be embedded in the beginning of the text
+> segment after the real executable header.
+
+Except the above requirements,
+there are really no constraints put onto the format of the kernel image file.
+Specifically, the requirements described above allow the kernel to be
+stored in ELF format,
+which is a widely accepted standard for object file storage.
+However, ELF requires the ELF header to be placed at the immediate beginning
+a file.
+
+If not for the aforementioned flexibility of Multiboot,
+this ELF requirement would lead to a serious problem for booting DragonFly
+BSD with GRUB whose kernels files are stored as ELF files.
+
+
+TODO: describe embedding of the multiboot header, linker script, asm declarations
+
 
 #### Embedding the Multiboot header
+
+TODO: readelf - why the header had to be placed in .interp
+
 
 #### Modifying the linker script
 
