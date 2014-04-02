@@ -173,7 +173,7 @@ bootloader which is responsible for loading the kernel.
 The main characteristics of this mode are 32 bit memory addresses
 and a _flat memory model_[^2].
 
-[^2]: Flat memory model essentialy means that the whole available memory
+[^2]: Flat memory model essentially means that the whole available memory
       is addressable in a linear space.
       All segment registers may be reset to 0 -- the whole memory may be
       viewed as one huge segment.
