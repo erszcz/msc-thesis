@@ -602,7 +602,7 @@ a file.
 
 If not for the aforementioned flexibility of Multiboot,
 this ELF requirement would lead to a serious problem for booting DragonFly
-BSD with GRUB whose kernels files are stored as ELF files.
+BSD, whose kernels are stored as ELF files, with GRUB.
 
 
 TODO: describe embedding of the multiboot header, linker script, asm declarations
