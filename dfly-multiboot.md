@@ -610,10 +610,18 @@ TODO: describe embedding of the multiboot header, linker script, asm declaration
 
 #### Embedding the Multiboot header
 
+\text{\\}
+
+asd qwe
 TODO: readelf - why the header had to be placed in .interp
 
 
 #### Modifying the linker script
+
+\text{\\}
+
+asd qwe zxc
+
 
 ### Booting the 32 bit kernel
 
