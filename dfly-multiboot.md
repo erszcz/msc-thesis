@@ -111,11 +111,8 @@ The contributions of this paper are following:
     and how, even in the light of these differences,
     the system could be modified to work with GRUB on this architecture.
 
-<a name="xr:booting-bsd" />
 
-# Booting a BSD system
-
-\label{xr:booting-bsd}
+# Booting a BSD system {#xr:booting-bsd}
 
 The contents of this section are heavily (though not entirely)
 based on the outstanding work of the authors
@@ -243,11 +240,8 @@ to the kernel code is performed in the virtual address space.
 The kernel does the platform dependent setup and calls `mi_startup`
 (the machine independent startup).
 
-<a name='xr:mb-grub' />
 
-# The Multiboot Specification and GRUB
-
-\label{xr:mb-grub}
+# The Multiboot Specification and GRUB {#xr:mb-grub}
 
 The described boot procedure and software is battle proven and works well
 for FreeBSD as well as, with minor changes, DragonFly BSD.
@@ -445,11 +439,7 @@ writing data to file systems -- that's a guarantee that it can't be
 responsible for any file system corruption.
 
 
-<a name="xr:dfly.c" />
-
-### `part_dfly` GRUB module implementation
-
-\label{xr:dfly.c}
+### `part_dfly` GRUB module implementation {#xr:part_dfly}
 
 The newly added support for `disklabel64` partitioning scheme was located
 in `grub-core/partmap/dfly.c` file as could be partially anticipated from
@@ -557,11 +547,7 @@ Two such images were prepared: one with an MS-DOS partition table
 and one with a DragonFly BSD `disklabel64`.
 
 
-<a name="xr:dfly-x86" />
-
-## Booting DragonFly BSD with GRUB on x86
-
-\label{xr:dfly-x86}
+## Booting DragonFly BSD with GRUB on x86 {#xr:dfly-x86}
 
 Conceptually, enabling GRUB to boot DragonFly BSD is relatively simple
 and involves the following steps:
@@ -699,11 +685,7 @@ loaded the kernel.
 #### Mounting the root file system
 
 
-<a name="xr:dfly-x64" />
-
-## Booting DragonFly BSD with GRUB on x86-64
-
-\label{xr:dfly-x64}
+## Booting DragonFly BSD with GRUB on x86-64 {#xr:dfly-x64}
 
 In case of the x86-64 architecture the problem is more complicated.
 The Multiboot Specification defines an interface only for loading 32 bit
