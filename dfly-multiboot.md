@@ -581,7 +581,7 @@ variant of DragonFly BSD kernel, i.e. for the Intel x86 platform.
 
 ### How does GRUB identify the kernel image?
 
-TODO: refer to Multiboot using Pandoc Markdow quotation
+TODO: refer to Multiboot using Pandoc Markdown quotation
 
 The Multiboot specification states that:
 
