@@ -601,9 +601,6 @@ this ELF requirement would lead to a serious problem for booting DragonFly
 BSD with GRUB, because of the kernel being natively stored as an ELF file.
 
 
-TODO: describe embedding of the multiboot header, linker script, asm declarations
-
-
 #### Embedding the Multiboot header
 
 \text{\\}
@@ -661,9 +658,22 @@ multiboot_header:
     .long   -(MULTIBOOT_HEADER_MAGIC + MULTIBOOT_HEADER_FLAGS)
 ```
 
-Please refer to @okuji2006multiboot for the exact meaning of the above flags.
+The header itself consists of 3 fields each 4 bytes wide:
 
-TODO: readelf - why the header had to be placed in .interp
+- the Multiboot header magic number: 0x1BADB002,
+- flags which state what the kernel expects from the bootloader,
+- a checksum which when added to the other header fields,
+  must have a 32-bit unsigned sum of zero.
+
+These values are sufficient for GRUB to recognize the kernel image
+as Multiboot compliant.
+Please refer to @okuji2006multiboot for more details.
+
+However, it's not sufficient just to place the header in `locore.s`.
+Please note that the header is declared in its own `.mbheader` section
+of the object file.
+This is necessary, but not enough, to comply with the requirement of placing
+it in the first 8KiB of the kernel image.
 
 
 #### Modifying the linker script
