@@ -614,7 +614,61 @@ TODO: describe embedding of the multiboot header, linker script, asm declaration
 
 \text{\\}
 
-asd qwe
+The most natural way of embedding the Multiboot header into the kernel
+is defining it in the assembly language.
+Given the heritage of DragonFly BSD it should not make one wonder
+that the kernel uses the AT&T assembler syntax[^ft:att].
+
+[^ft:att]: @ritchie1974unix developed UNIX when working
+           at AT&T Bell Laboratories.
+
+The low level architecture dependent parts of the kernel are to be found
+in `sys/platform/pc32` and `sys/platform/pc64` subdirectories
+of the system source tree.
+
+`sys/platform/pc32/i386/locore.s` is an assembly file defining the entry point
+to the x86 kernel.
+It's format may seem a bit strange at first sight since it's the AT&T
+syntax assembly mixed with C preprocessor directives.
+Deciphering some definitions and rules from `sys/conf/kern.pre.mk` leads
+to the general command the file is processed with:
+
+```bash
+gcc -x assembler-with-cpp -c sys/platform/pc32/i386/locore.s
+```
+
+The command handles generating an object file from such a C preprocessed
+assembly file.
+Thanks to such a setup, the Multiboot header definition can use
+meaningfully named macros instead of obscure numbers defined by the
+specification:
+
+```gnuassembler
+/*
+ * Multiboot definitions        TODO: extract to header file
+ */
+#define MULTIBOOT_HEADER_MAGIC      0x1BADB002
+#define MULTIBOOT_BOOTLOADER_MAGIC  0x2BADB002
+#define MULTIBOOT_PAGE_ALIGN        0x00000001
+#define MULTIBOOT_MEMORY_INFO       0x00000002
+#define MULTIBOOT_HEADER_FLAGS      MULTIBOOT_PAGE_ALIGN \
+                                    | MULTIBOOT_MEMORY_INFO
+#define MULTIBOOT_CMDLINE_MAX       0x1000
+#define MI_CMDLINE_FLAG             (1 << 2)
+#define MI_CMDLINE                  0x10
+
+/* ... snip ... */
+
+    .section .mbheader
+    .align  4
+multiboot_header:
+    .long   MULTIBOOT_HEADER_MAGIC
+    .long   MULTIBOOT_HEADER_FLAGS
+    .long   -(MULTIBOOT_HEADER_MAGIC + MULTIBOOT_HEADER_FLAGS)
+```
+
+Please refer to @okuji2006multiboot for the exact meaning of the above flags.
+
 TODO: readelf - why the header had to be placed in .interp
 
 
