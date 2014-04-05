@@ -577,11 +577,9 @@ variant of DragonFly BSD kernel, i.e. for the Intel x86 platform.
 
 ### How does GRUB identify the kernel image?
 
-TODO: refer to Multiboot using Pandoc Markdown quotation
+The Multiboot specification [@okuji2006multiboot, section 3.1] states:
 
-The Multiboot specification states that:
-
-> [an] OS image must contain an additional header called Multiboot header,
+> An OS image must contain an additional header called Multiboot header,
 > besides the headers of the format used by the OS image. The Multiboot
 > header must be contained completely within the first 8192 bytes of the OS
 > image, and must be longword (32-bit) aligned. In general, it should come
