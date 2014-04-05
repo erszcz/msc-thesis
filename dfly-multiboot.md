@@ -680,7 +680,31 @@ it in the first 8KiB of the kernel image.
 
 \text{\\}
 
-asd qwe zxc
+Executable and Linking Format Specification [@tis1995elf] describes the
+format of an object file -- e.g. the DragonFly BSD kernel executable.
+While ELF and its specification is a product of the post-UNIX age of
+computing history, the process of composing programs from reusable parts
+in its rawest form, or _linking_, is probably as old as computing itself.
+
+What is the responsibility of a linker? @linkers1999 gives a succinct
+answer to that question:
+
+> [A] linker assigns numeric locations to symbols,
+> determines the sizes and location of the segments in the output address space,
+> and figures out where everything goes in the output file.
+
+The last part of this sentence is crucial.
+
+The behaviour of GNU ld, the linker used by DragonFly BSD,
+may either be driven by a linker script or by an algorithm hardcoded
+in ld itself.
+
+In case of user space applications, the programmer doesn't have to worry
+about specifying the linker script, as ld will in almost all cases _just
+do the right thing_.
+Unfortunately, that's not the case for kernel development.
+
+TODO: readelf - why the header had to be placed in .interp
 
 
 ### Booting the 32 bit kernel
