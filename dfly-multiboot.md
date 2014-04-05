@@ -117,7 +117,8 @@ The contributions of this paper are following:
 
 The contents of this section are heavily (though not entirely)
 based on the outstanding work of the authors
-of the [FreeBSD Architecture Handbook][ext:arch-handbook]; namely on chapter
+of the [FreeBSD Architecture Handbook][ext:arch-handbook] [@freebsdarch];
+namely on chapter
 [1. Bootstrapping and Kernel Initialization][ext:arch-handbook-boot]
 and on the analysis of FreeBSD and DragonFly BSD source code.
 
