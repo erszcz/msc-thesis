@@ -60,8 +60,8 @@ A more detailed description of the process is given in
 [_\ref{xr:booting-bsd}{\ }Booting a BSD system_](#xr:booting-bsd).
 
 The multitude of problems involved in implementing a bootloader for each
-combination of an operating system and hardware platform in use led Bryan Ford
-and Erich Stefan Boleyn to devise [the Multiboot Specification][ext:multiboot].
+combination of an operating system and hardware platform in use led
+@okuji2006multiboot to devise [the Multiboot Specification][ext:multiboot].
 The specification defines an interface between a universal bootloader and an
 operating system. One implementation of the specification is [GRUB][ext:grub] --
 the bootloader which came to existence thanks to the effort of [GNU][ext:gnu]
