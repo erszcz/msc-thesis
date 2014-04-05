@@ -594,7 +594,7 @@ Specifically, the requirements described above allow the kernel to be
 stored in ELF format,
 which is a widely accepted standard for object file storage.
 However, ELF requires the ELF header to be placed at the immediate beginning
-of a file.
+of a file [see @tis1995elf, section 1-2].
 
 If not for the aforementioned flexibility of Multiboot,
 this ELF requirement would lead to a serious problem for booting DragonFly
