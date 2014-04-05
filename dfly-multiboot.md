@@ -639,7 +639,7 @@ specification:
 
 ```gnuassembler
 /*
- * Multiboot definitions        TODO: extract to header file
+ * Multiboot definitions
  */
 #define MULTIBOOT_HEADER_MAGIC      0x1BADB002
 #define MULTIBOOT_BOOTLOADER_MAGIC  0x2BADB002
