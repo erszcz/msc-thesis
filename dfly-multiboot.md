@@ -154,14 +154,14 @@ The code contained in MBR is `boot0` - the first stage of the BSD bootloader.
 stage; it understands the partition table and can choose one of the four
 primary partitions to boot the later stage from.
 After the choice is done it just loads the
-first sector of that partition and runs it, i.e. it runs `boot2`[^1].
+first sector of that partition and runs it, i.e. it runs `boot2`[^ft:boot1].
 
-[^1]: Why not `boot1`? `boot1` actually exists.
-      It is used when booting from a floppy disk,
-      which is rarely the case nowadays.
-      It performs the role equivalent to `boot0`,
-      i.e. finding and loading `boot2`,
-      with the difference of being run from a floppy.
+[^ft:boot1]: Why not `boot1`? `boot1` actually exists.
+             It is used when booting from a floppy disk,
+             which is rarely the case nowadays.
+             It performs the role equivalent to `boot0`,
+             i.e. finding and loading `boot2`,
+             with the difference of being run from a floppy.
 
 ## Second stage: `boot2`
 
@@ -171,12 +171,12 @@ Its aim is to locate and run the `loader` -- the third stage of the
 bootloader which is responsible for loading the kernel.
 `boot2` also switches the CPU to the aforementioned protected mode.
 The main characteristics of this mode are 32 bit memory addresses
-and a _flat memory model_[^2].
+and a _flat memory model_[^ft:flatmem].
 
-[^2]: Flat memory model essentially means that the whole available memory
-      is addressable in a linear space.
-      All segment registers may be reset to 0 -- the whole memory may be
-      viewed as one huge segment.
+[^ft:flatmem]: Flat memory model essentially means that the whole available
+               memory is addressable in a linear space.
+               All segment registers may be reset to 0 -- the whole memory
+               may be viewed as one huge segment.
 
 One more thing `boot2` does before running `loader` is initializing
 the first few fields of the `struct bootinfo` structure which is passed
@@ -196,17 +196,18 @@ load any extra modules, configuring the environment,
 booting from encrypted disks.
 It is an ELF binary as is the kernel itself.
 In case of a 64 bit system, the `loader` is capable of entering
-the _long mode_[^3],
+the _long mode_[^ft:longmode],
 turning on paging and setting up the initial page tables (the
 complete setup of the virtual memory management is done later in the
 kernel).
 
-[^3]: Long mode is the mode of execution where the processor and the programmer
-      are at last allowed to use the full width of the address bus.
-      In theory.
-      In practice, at most 48 bits of the address are actually used
-      as there is simply no need to use more with today's amounts of
-      available memory.
+[^ft:longmode]: Long mode is the mode of execution where the processor
+                and the programmer are at last allowed to use the full width
+                of the address bus.
+                In theory.
+                In practice, at most 48 bits of the address are actually used
+                as there is simply no need to use more with today's amounts of
+                available memory.
 
 ## x86 kernel
 
@@ -263,8 +264,8 @@ reasons behind the Multiboot Specification.
 Other motives behind the specification are:
 
 - the reduction of effort put into crafting bootloaders for disparate
-  hardware platforms (much of the code for advanced features[^4] will be
-  platform independent),
+  hardware platforms (much of the code for advanced
+  features[^ft:pifeatures] will be platform independent),
 
 - simplifying the boot process from the point of view of the OS
   programmer (who is not interested in the low level post-8086 cruft),
@@ -272,10 +273,10 @@ Other motives behind the specification are:
 - introducing a well defined interface between a bootloader and an
   operating system (allowing the same bootloader to load different OSes).
 
-[^4]: E.g. a graphical user interface implementation most probably
-      will not require platform specific adjustments;
-      same goes for booting over a network (with the exception of a
-      network interface driver, of course).
+[^ft:pifeatures]: E.g. a graphical user interface implementation most probably
+                  will not require platform specific adjustments;
+                  same goes for booting over a network (with the exception
+                  of a network interface driver, of course).
 
 The bootloader implementing the Multiboot Specification is GNU GRUB.
 Thanks to the modular architecture and clever design,
@@ -304,15 +305,16 @@ It turns out that it can.
 
 ## State of the Art
 
-Besides[^5] loading and booting operating system kernels,
+Besides[^ft:chainloading] loading and booting operating system kernels,
 GRUB is capable of so called _chain loading_.
 This is a technique of substituting the memory contents of the running program
 with a new program and passing it the control flow.
 The UNIX `exec(2)` system call is an application of the same technique.
 
-[^5]: In fact it's not true that GRUB can chain load besides booting OS kernels.
-      Chain loading is _how_ it boots both those kernels
-      and loads other bootloaders.
+[^ft:chainloading]: In fact it's not true that GRUB can chain load besides
+                    booting OS kernels.
+                    Chain loading is _how_ it boots both those kernels
+                    and loads other bootloaders.
 
 By chain loading GRUB is able to load other bootloaders which in turn
 might boot operating systems that GRUB itself can't
@@ -654,10 +656,10 @@ The Multiboot Specification defines an interface only for loading 32 bit
 operating systems due to two reasons.
 
 Firstly, when the specification was defined in 1995, the x86-64 was still
-to be unknown for the next 5 years.[^6]
+to be unknown for the next 5 years.[^ft:amd64]
 
-[^6]: According to Wikipedia: [AMD64][ext:wiki-amd64] was _announced
-      in 1999 with a full specification in August 2000_.
+[^ft:amd64]: According to Wikipedia: [AMD64][ext:wiki-amd64] was _announced
+             in 1999 with a full specification in August 2000_.
 
 [ext:wiki-amd64]: http://en.wikipedia.org/wiki/X86-64#History_of_AMD64
 
