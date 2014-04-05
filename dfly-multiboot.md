@@ -36,6 +36,7 @@ may have on the whole boot process.
 
 \pagenumbering{arabic}
 
+
 # Introduction
 
 [Wikipedia states][ext:wiki-os] that _an operating system (OS) is a collection
@@ -127,6 +128,7 @@ Though the description in this section is far from being simple,
 its every paragraph is only a simplification of what actually
 happens -- a lot of details are omitted.
 
+
 ## BIOS
 
 The [BIOS Boot Specification][ext:biosspec] defines the behaviour
@@ -144,6 +146,7 @@ contained within them.
 
 [ext:biosspec]: http://www.scs.stanford.edu/nyu/04fa/lab/specsbbs101.pdf
 
+
 ## First stage: `boot0`
 
 The code contained in MBR is `boot0` - the first stage of the BSD bootloader.
@@ -159,6 +162,7 @@ first sector of that partition and runs it, i.e. it runs `boot2`[^ft:boot1].
              It performs the role equivalent to `boot0`,
              i.e. finding and loading `boot2`,
              with the difference of being run from a floppy.
+
 
 ## Second stage: `boot2`
 
@@ -184,6 +188,7 @@ the hardware (disk geometry as detected by the BIOS), available memory,
 preloaded modules and the environment (variables configuring the kernel
 and the modules).
 
+
 ## Third stage: `loader`
 
 The `loader`, already running in the protected mode, is actually quite a
@@ -205,6 +210,7 @@ kernel).
                 In practice, at most 48 bits of the address are actually used
                 as there is simply no need to use more with today's amounts of
                 available memory.
+
 
 ## x86 kernel
 
@@ -229,6 +235,7 @@ Then, two more functions are called: `init386` and `mi_startup`.
 `init386` does further platform dependent initialization of the chip.
 `mi_startup` is the machine independent startup routine of the kernel
 which never returns -- it finalizes the boot process.
+
 
 ## x86-64 kernel
 
@@ -567,6 +574,7 @@ The following sections describe in detail how the listed steps were
 performed, taking the above consideration into account, for the `pc32`
 variant of DragonFly BSD kernel, i.e. for the Intel x86 platform.
 
+
 ### How does GRUB identify the kernel image?
 
 TODO: refer to Multiboot using Pandoc Markdown quotation
@@ -680,7 +688,9 @@ platform dependent `init386` initialization procedure.
 The rest of the system should not need to be aware of what bootloader
 loaded the kernel.
 
+
 #### Adjusting the entry point
+
 
 #### Mounting the root file system
 
@@ -722,6 +732,7 @@ the bootloader would then be able to load the 64 bit kernel anywhere into
 the 64 bit addressable memory and run it;
 the kernel itself would be responsible for setting up the memory mapping
 scheme according to its own requirements.
+
 
 ### The workaround
 
@@ -796,6 +807,7 @@ beginning.
 The earliest version of the Multiboot Specification also predates the
 earliest version of UEFI (then known as Intel Boot Initiative) by 3 years.
 
+
 # Conclusions
 
 The evolutionary development of processor architectures, requirement of
@@ -819,9 +831,11 @@ inside the ELF binary) and spanning the whole range of addresses the
 kernel is linked to use.
 However, the concept needs thorough evaluation.
 
+
 # Literature
 
 TODO: embed bibtex or whatever makes sense, for now it's just copy-n-paste
+
 
 ## Printed
 
