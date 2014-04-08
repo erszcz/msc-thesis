@@ -675,7 +675,7 @@ This is necessary, but not enough, to comply with the requirement of placing
 it in the first 8KiB of the kernel image.
 
 
-#### Modifying the linker script
+#### What is a linker script?
 
 \text{\\}
 
@@ -685,8 +685,8 @@ While ELF and its specification is a product of the post-UNIX age of
 computing history, the process of composing programs from reusable parts
 in its rawest form, or _linking_, is probably as old as computing itself.
 
-What is the responsibility of a linker? @linkers1999 gives a succinct
-answer to that question:
+What is the responsibility of a linker?
+@linkers1999 in _Linkers & Loaders_ gives a succinct answer to that question:
 
 > [A] linker assigns numeric locations to symbols,
 > determines the sizes and location of the segments in the output address space,
@@ -694,16 +694,129 @@ answer to that question:
 
 The last part of this sentence is crucial.
 
-The behaviour of GNU ld, the linker used by DragonFly BSD,
-may either be driven by a linker script or by an algorithm hardcoded
-in ld itself.
+@chamberlain-taylor2003 in _Using ld, the GNU linker_ specify:
 
-In case of user space applications, the programmer doesn't have to worry
-about specifying the linker script, as ld will in almost all cases _just
+> The main purpose of the linker script is to describe how the sections
+> in the input files should be mapped into the output file, and to control
+> the memory layout of the output file.
+> Most linker scripts do nothing more than this.
+
+Again @chamberlain-taylor2003 also disclose the language that GNU `ld` accepts:
+
+> `ld` accepts Linker Command Language files written in a superset
+> of AT&T’s Link Editor Command Language syntax,
+> to provide explicit and total control over the linking process.
+
+In the light of the above, especially the _total control over the linking
+process_ which decides _where everything goes in the output file_,
+one might think that making the linker place the Multiboot header
+at the beginning of the output file is a simple matter.
+The experience gained from this project is exactly the opposite.
+
+The behaviour of GNU `ld`, the linker used by DragonFly BSD,
+may either be driven by an explicitly specified linker script
+or by one embedded in the linker executable itself.
+
+In case of userspace applications, the programmer doesn't have to worry
+about specifying the linker script, as `ld` will in almost all cases _just
 do the right thing_.
 Unfortunately, that's not the case for kernel development.
+There are several reasons for using a custom linker script for the kernel.
 
-TODO: readelf - why the header had to be placed in .interp
+One of them is portability among different architectures and compiler
+vendors which is needed for bootstrapping.
+In order to be able to build the kernel on a different OS,
+the linker script must be compatible with the platform's compiler which
+might emit different output than the native compiler of DragonFly BSD.
+In other words, before we have _any_ running DragonFly BSD system,
+we can't build DragonFly BSD on DragonFly BSD,
+hence the need of supporting different architectures.
+
+Another reason is that by using the linker script it's possible to define
+symbols in the program namespace, whose values couldn't be determined
+in the code otherwise.
+Examples of such symbols are `edata` or `end` meaning, respectively,
+the end of the `.data` section and of the kernel binary.
+In a userspace program there's no (or little) use for such symbols,
+but the kernel uses them for calculating the offset and size
+of the `.bss` section which the it must initialize itself.
+
+
+#### Modifying the linker script
+
+\text{\\}
+
+The language accepted by `ld` has constructs for setting symbol/section
+virtual addresses, overriding their linear (or load) addresses,
+specifying regions of accessible memory and their access modes
+and assigning input sections to output sections placed in particular
+program segments.
+None of these constructs could be used to precisely specify the place
+of the Multiboot header in the output kernel binary.
+
+The following is a description of tried methods.
+
+Placing the `.mbheader` section before the `.text` section:
+
+```diff
+diff --git a/sys/platform/pc32/conf/ldscript.i386 \
+           b/sys/platform/pc32/conf/ldscript.i386
+index a0db817..1068ba5 100644
+--- a/sys/platform/pc32/conf/ldscript.i386
++++ b/sys/platform/pc32/conf/ldscript.i386
+@@ -21,6 +21,7 @@ SECTIONS
+   kernmxps = CONSTANT (MAXPAGESIZE);
+   kernpage = CONSTANT (COMMONPAGESIZE);
+   . = kernbase + kernphys + SIZEOF_HEADERS;
++  .mbheader       : { *(.mbheader) }
+   .interp         : { *(.interp) } :text :interp
+   .note.gnu.build-id : { *(.note.gnu.build-id) } :text
+   .hash           : { *(.hash) }
+```
+
+On the contrary to what one might expect,
+this had the effect of placing the `.mbheader`
+input section in the `.data` output section which is placed _after_ the
+`.text` output section.
+That's definitely far from the initial 8KiB of the kernel binary.
+
+Inserting the `.mbheader` section at the beginning of the `.text` section
+succeeded in the sense that the header was in fact placed before all other
+program code.
+Alas, the `.text` section itself begins far in the file, after the program
+headers, the `.interp` section and a number of sections containing
+relocation information.
+
+Analysis of `readelf` and `objdump` output showed that symbol offsets from
+the beginning of the kernel image were equal to the virtual addresses
+decreased by a constant value.
+In fact, the binary was linked to use the same values for virtual
+and load addresses.
+The constant offset was equal to the value of symbol `kernbase`,
+which specifies a page aligned base address at which the kernel is loaded.
+
+This led to an attempt at forcing the position in the output binary
+by modifying the load address of the whole `text` output segment.
+This segment contained all consecutive sections up to the `.data`
+sections, i.e. `.interp`, sections with relocation and symbol information
+and finally the `.text` section.
+
+Finally, the trial and error process led to inserting the `.mbheader`
+section at the end of the `.interp` section.
+
+Usually, `.interp` contains a path to a program interpreter,
+i.e. a program responsible for interpreting and running the contents of
+a binary file.
+In case of userspace programs, the interpreter might handle symbol
+relocations or lazy load shared libraries.
+
+In case of a kernel, the path to the interpreter is just a stub
+(`/red/herring` to be exact).
+The `.interp` section is the first in the kernel image.
+Placing the `.mbheader` section after the null-terminated string
+in the `.interp` section causes no issues with accessing the interpreter
+path while still leading to placement of the Multiboot header in the first
+8KiB of the kernel binary.
 
 
 ### Booting the 32 bit kernel
