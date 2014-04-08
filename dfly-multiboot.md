@@ -815,8 +815,26 @@ In case of a kernel, the path to the interpreter is just a stub
 The `.interp` section is the first in the kernel image.
 Placing the `.mbheader` section after the null-terminated string
 in the `.interp` section causes no issues with accessing the interpreter
-path while still leading to placement of the Multiboot header in the first
-8KiB of the kernel binary.
+path (if it ever was necessary) while still leading to placement
+of the Multiboot header in the first 8KiB of the kernel binary:
+
+```diff
+diff --git a/sys/platform/pc32/conf/ldscript.i386 \
+           b/sys/platform/pc32/conf/ldscript.i386
+index dc1242e..24081c9 100644
+--- a/sys/platform/pc32/conf/ldscript.i386
++++ b/sys/platform/pc32/conf/ldscript.i386
+@@ -21,8 +21,8 @@ SECTIONS
+   kernmxps = CONSTANT (MAXPAGESIZE);
+   kernpage = CONSTANT (COMMONPAGESIZE);
+   . = kernbase + kernphys + SIZEOF_HEADERS;
+-  .interp         : { *(.interp) } :text :interp
++  .interp         : { *(.interp)
++                      *(.mbheader) } :text :interp
+   .note.gnu.build-id : { *(.note.gnu.build-id) } :text
+   .hash           : { *(.hash) }
+   .gnu.hash       : { *(.gnu.hash) }
+```
 
 
 ### Booting the 32 bit kernel
