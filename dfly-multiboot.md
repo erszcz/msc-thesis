@@ -802,6 +802,21 @@ This segment contained all consecutive sections up to the `.data`
 section, i.e. `.interp`, sections with relocation and symbol information
 and finally the `.text` section.
 
+Introducing a completely new program header (a.k.a. segment) was also
+tried with no success.
+This is probably explained by the message of commit e19c755
+from the DragonFly BSD repository:
+
+> The gold linker changed its ELF program header handling defaults for
+> version 2.22, and this resulted in an extra LOAD segment reserved only
+> for the program headers.  The DragonFly loader wasn't expecting that
+> and instantly rebooted when trying to load a gold kernel.
+
+From this message we can infer that `dloader` expects a kernel with
+exactly 2 loadable program segments.
+An image with more can be generated easily,
+but it won't be bootable by `dloader`.
+
 Finally, the trial and error process led to inserting the `.mbheader`
 section at the end of the `.interp` section.
 
@@ -843,6 +858,9 @@ index dc1242e..24081c9 100644
            In case of userspace programs, the interpreter handles symbol
            relocations and lazy loads those dynamically linked shared libraries
            finalizing the linking of the program during its execution.
+
+This approach hasn't caused any issues with the resulting binaries so far,
+but can't be considered _the proper way_ of embedding the Multiboot header.
 
 
 ### Booting the 32 bit kernel
