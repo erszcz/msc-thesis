@@ -702,7 +702,7 @@ The last part of this sentence is crucial.
 > the memory layout of the output file.
 > Most linker scripts do nothing more than this.
 
-Again @chamberlain-taylor2003 also disclose the language that GNU `ld` accepts:
+Again @chamberlain-taylor2003 also inform what language GNU `ld` accepts:
 
 > `ld` accepts Linker Command Language files written in a superset
 > of AT&T’s Link Editor Command Language syntax,
@@ -799,7 +799,7 @@ which specifies a page aligned base address at which the kernel is loaded.
 This led to an attempt at forcing the position in the output binary
 by modifying the load address of the whole `text` output segment.
 This segment contained all consecutive sections up to the `.data`
-sections, i.e. `.interp`, sections with relocation and symbol information
+section, i.e. `.interp`, sections with relocation and symbol information
 and finally the `.text` section.
 
 Finally, the trial and error process led to inserting the `.mbheader`
