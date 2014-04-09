@@ -813,7 +813,7 @@ In case of a kernel, the path to the interpreter is just a stub
 The `.interp` section is the first in the kernel image.
 Placing the `.mbheader` section after the null-terminated string
 in the `.interp` section causes no issues with accessing the interpreter
-path (if it ever was necessary) while still leading to placement
+path (if it is ever necessary) while still leading to placement
 of the Multiboot header in the first 8KiB of the kernel binary:
 
 ```diff
