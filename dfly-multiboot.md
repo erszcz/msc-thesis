@@ -805,12 +805,9 @@ and finally the `.text` section.
 Finally, the trial and error process led to inserting the `.mbheader`
 section at the end of the `.interp` section.
 
-Usually, `.interp` contains a path to a program interpreter,
-i.e. a program responsible for interpreting and running the contents of
-a binary file.
-In case of userspace programs, the interpreter might handle symbol
-relocations or lazy load shared libraries.
-
+Section `.interp` contains a path to the program interpreter,
+i.e. a program which is run in place of the loaded binary and prepares
+it for execution[^ft:ldd].
 In case of a kernel, the path to the interpreter is just a stub
 (`/red/herring` to be exact).
 The `.interp` section is the first in the kernel image.
@@ -836,6 +833,16 @@ index dc1242e..24081c9 100644
    .hash           : { *(.hash) }
    .gnu.hash       : { *(.gnu.hash) }
 ```
+
+[^ft:ldd]: On x86-64 Linux this is typically `/lib64/ld-linux-x86-64.so.2`
+           while on DragonFly BSD `/usr/libexec/ld-elf.so.2`.
+           The majority of software nowadays is dynamically linked.
+           This means that an executable doesn't contain all the code the
+           program needs to run successfully and relies on shared libraries
+           commonly available on the target system.
+           In case of userspace programs, the interpreter handles symbol
+           relocations and lazy loads those dynamically linked shared libraries
+           finalizing the linking of the program during its execution.
 
 
 ### Booting the 32 bit kernel
