@@ -2,6 +2,7 @@
 papersize: a4paper
 classoption: oneside
 linkcolor: black
+documentclass: scrartcl
 ---
 
 \begin{abstract}
