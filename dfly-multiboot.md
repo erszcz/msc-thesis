@@ -979,6 +979,114 @@ kernel is linked with aren't important from `dloader`'s perspective.
 They can be freely adjusted in any way that is convenient.
 
 
+#### Loading the image: GRUB
+
+\text{\\}
+
+The ending remark of the previous section is very fortunate,
+as GRUB is much stricter than `dloader` in following the ELF
+specification.
+It relies solely on the segment load addresses for loading an ELF kernel.
+Thanks to `dloader`'s ambivalence as to the values of these addresses,
+we can safely adjust them in any way required by GRUB.
+One thing to keep in mind, though, is not to introduce extra program
+headers, as that `dloader` won't be able to handle.
+
+The only thing required to adjust the load addresses is overriding the
+load address of the first output section in the linker script.
+The following sections will be just laid out linearly after the adjusted one.
+The first section is the already mentioned `.interp`.
+The introduced change is presented below:
+
+```diff
+   kernmxps = CONSTANT (MAXPAGESIZE);
+   kernpage = CONSTANT (COMMONPAGESIZE);
+   . = kernbase + kernphys + SIZEOF_HEADERS;
+-  .interp         : { *(.interp)
+-                      *(.mbheader) } :text :interp
++  .interp         : AT (ADDR(.interp) - kernbase)
++  {
++    *(.interp)
++    *(.mbheader)
++  } :text :interp
+   .note.gnu.build-id : { *(.note.gnu.build-id) } :text
+   .hash           : { *(.hash) }
+   .gnu.hash       : { *(.gnu.hash) }
+```
+
+Inspecting a kernel built with the adjusted linker script shows that the
+segment load addresses are in fact offset from the virtual addresses
+by a value of `0xc0000000`, i.e. the `kernbase` location.
+
+```
+$ readelf -l /boot/kernel/kernel
+
+Elf file type is EXEC (Executable file)
+Entry point 0xc013b040
+There are 5 program headers, starting at offset 52
+
+Program Headers:
+  Type      Offset   VirtAddr   PhysAddr   FileSiz MemSiz  Flg Align
+  PHDR      0x000034 0xc0100034 0x00100034 0x000a0 0x000a0 R   0x4
+  INTERP    0x0000d4 0xc01000d4 0x001000d4 0x00019 0x00019 R   0x4
+      [Requesting program interpreter: /red/herring]
+  LOAD      0x000000 0xc0100000 0x00100000 0x310134 0x310134 R E 0x1000
+  LOAD      0x310134 0xc0411134 0x00411134 0x2b875 0x4662ac RW  0x1000
+  DYNAMIC   0x310134 0xc0411134 0x00411134 0x00068 0x00068 RW  0x4
+...
+```
+
+At last, it is worth noting how GRUB treats the entry address present in
+the ELF headers of the kernel image:
+
+```
+$ readelf -h /boot/kernel/kernel
+ELF Header:
+  Magic:   7f 45 4c 46 01 01 01 00 00 00 00 00 00 00 00 00
+  Class:                             ELF32
+  Data:                              2's complement, little endian
+  Version:                           1 (current)
+  OS/ABI:                            UNIX - System V
+  ABI Version:                       0
+  Type:                              EXEC (Executable file)
+  Machine:                           Intel 80386
+  Version:                           0x1
+  Entry point address:               0xc013b040
+  Start of program headers:          52 (bytes into file)
+  Start of section headers:          21377500 (bytes into file)
+  Flags:                             0x0
+  Size of this header:               52 (bytes)
+  Size of program headers:           32 (bytes)
+  Number of program headers:         5
+  Size of section headers:           40 (bytes)
+  Number of section headers:         34
+  Section header string table index: 31
+```
+
+As seen above, the entry point (`0xc013b040`) is specified as a virtual
+address positioned high in the memory.
+Fortunately, GRUB is capable of adjusting this value by the difference
+between the virtual and physical addresses of the segment the entry point
+is contained in (i.e. by `kernbase`) as seen in the code below:
+
+```C
+// grub-core/loader/multiboot_elfxx.c:131
+if (phdr(i)->p_vaddr <= ehdr->e_entry
+    && phdr(i)->p_vaddr + phdr(i)->p_memsz > ehdr->e_entry)
+  {
+    grub_multiboot_payload_eip = (ehdr->e_entry - phdr(i)->p_vaddr)
+      + phdr(i)->p_paddr;
+    ...
+  }
+```
+
+This is sufficient for GRUB to be able to properly load the kernel image
+and jump to the entry point address.
+The next step is to make the entry point expect entry from GRUB,
+i.e. to adjust the low level assembly routine controlling the kernel
+just after it's jumped to.
+
+
 #### Adjusting the entry point
 
 
