@@ -887,7 +887,7 @@ The rest of the system should not need to be aware of what bootloader
 loaded the kernel.
 
 
-#### Loading the image
+#### Loading the image: `dloader`
 
 \text{\\}
 
@@ -905,13 +905,13 @@ Entry point 0xc016c450
 There are 5 program headers, starting at offset 52
 
 Program Headers:
-  Type           Offset   VirtAddr   PhysAddr   FileSiz MemSiz  Flg Align
-  PHDR           0x000034 0xc0100034 0xc0100034 0x000a0 0x000a0 R   0x4
-  INTERP         0x0000d4 0xc01000d4 0xc01000d4 0x0000d 0x0000d R   0x1
+  Type      Offset   VirtAddr   PhysAddr   FileSiz MemSiz  Flg Align
+  PHDR      0x000034 0xc0100034 0xc0100034 0x000a0 0x000a0 R   0x4
+  INTERP    0x0000d4 0xc01000d4 0xc01000d4 0x0000d 0x0000d R   0x1
       [Requesting program interpreter: /red/herring]
-  LOAD           0x000000 0xc0100000 0xc0100000 0x85a6ec 0x85a6ec R E 0x1000
-  LOAD           0x85a6ec 0xc095b6ec 0xc095b6ec 0x9d313 0x50b454 RW  0x1000
-  DYNAMIC        0x85a6ec 0xc095b6ec 0xc095b6ec 0x00068 0x00068 RW  0x4
+  LOAD      0x000000 0xc0100000 0xc0100000 0x85a6ec 0x85a6ec R E 0x1000
+  LOAD      0x85a6ec 0xc095b6ec 0xc095b6ec 0x9d313 0x50b454 RW  0x1000
+  DYNAMIC   0x85a6ec 0xc095b6ec 0xc095b6ec 0x00068 0x00068 RW  0x4
 ...
 ```
 
@@ -920,40 +920,51 @@ The `-l` flag tells `readelf` to list just the program headers (a.k.a segments).
 `dloader` can load such a kernel just fine thanks to its algorithm
 for reading ELF images.
 Firstly, it ignores the physical addresses embedded in the ELF image.
-Secondly, it calculates the load address based on the entry address stored
-in the image (comments marked with _RS_ are added by this paper's author):
+Secondly, it calculates the load address based on the entry address
+stored in the image.
+
+The entry address is read from the ELF header:
 
 ```C
-// RS: sys/boot/common/load_elf.c:174
-//     The entry address is read from the ELF header.
+// sys/boot/common/load_elf.c:174
 /*
 * Calculate destination address based on kernel entrypoint
 */
 dest = ehdr->e_entry;
+```
 
-// RS: sys/boot/common/load_elf.c:233
-//     The entry address is passed to an architecture word
-//     size aware function that will read the ELF image.
-//     For ELF32 the call expands to `elf32_loadimage(fp, &ef, dest)`.
+The entry address is passed to an architecture word
+size aware function that will read the ELF image.
+For ELF32 the macro call `__elfN(loadimage)` expands
+to `elf32_loadimage(fp, &ef, dest)`.
+
+```C
+// sys/boot/common/load_elf.c:233
 __elfN(loadimage)(fp, &ef, dest);
+```
 
-// RS: sys/boot/common/load_elf.c:258
-//     `elf32_loadimage()` commented signature.
-//     Note that variable `dest` is known as `off` inside the function.
+The following is the commented signature of `elf32_loadimage()`.
+Note that variable `dest` is known as `off` inside the function.
+
+```C
+// sys/boot/common/load_elf.c:258
 /*
  * With the file (fd) open on the image, and (ehdr) containing
  * the Elf header, load the image at (off)
  */
 static int
 __elfN(loadimage)(struct preloaded_file *fp, elf_file_t ef, u_int64_t off);
+```
 
-// RS: sys/boot/common/load_elf.c:289
-//     The load address is adjusted depending on the architecture.
-//     For ELF32 and the initial entry address equal to 0xc016c450
-//     this calculation evaluates to 0xffffffff40000000.
-//     An example program header virtual address of 0xc0100000
-//     offset by 0xffffffff40000000 is 0x100000 -- a convenient
-//     low physical address to load the kernel at.
+Below, the load address is adjusted depending on the architecture.
+For ELF32 and the initial entry address equal to `0xc016c450`
+this calculation evaluates to `0xffffffff40000000.`
+An example program header virtual address of `0xc0100000`
+offset by `0xffffffff40000000` gives `0x100000`, i.e. 1MiB -- a convenient
+low physical address to load the kernel at.
+
+```C
+// sys/boot/common/load_elf.c:289
 if (ef->kernel) {
 #ifdef __i386__
 #if __ELF_WORD_SIZE == 64
@@ -963,9 +974,9 @@ if (ef->kernel) {
 #endif
 ```
 
-TODO: how GRUB decides where to load the kernel?
-      how does it choose the entry point address?
-      adjusting the linker script, again
+The insight flowing from this analysis is that the load addresses the
+kernel is linked with aren't important from `dloader`'s perspective.
+They can be freely adjusted in any way that is convenient.
 
 
 #### Adjusting the entry point
