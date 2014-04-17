@@ -1137,7 +1137,8 @@ that booted us is Multiboot compliant:
 +1:
 ```
 
-Unless it is, we simply skip the newly added code block and continue
+Unless the kernel is booted by a Multiboot compliant bootloader,
+we skip the newly added code block and continue
 booting along the old path (i.e. `jne 1f`).
 
 If it is Multiboot compliant, we mark the relevant fields of the `struct
@@ -1206,11 +1207,12 @@ whose definition is:
 ```
 
 The above definition tells us that each memory access via a virtual address
-should be done to a location decreased by the value of `KERNBASE`.
+should be done to a location specified by that virtual address decreased
+by the value of `KERNBASE`.
 It makes perfect sense when we realize that:
 
 - the kernel is linked to run at a high virtual address (`0xc0000000`),
-- the kernel is loaded at a low physical address.
+- the kernel is loaded at a low physical address (`0x100000`).
 
 In fact, most of code in `locore.s` is running from a low memory
 location because that's where the bootloader puts the kernel.
@@ -1221,7 +1223,8 @@ is one of the tasks performed in `locore.s`.
 Since the MMU isn't ready yet, some other mechanism of translation must
 be used to access the memory at the proper physical location -- that's the
 purpose of the `R` macro.
-Code after relocation[^ft:relocation] does not use the macro anymore.
+Code intended to run after relocation[^ft:relocation] does not use
+the macro anymore.
 
 [^ft:relocation]: Relocation is the switch from executing code at physical
                   addresses to executing at virtual addresses.
