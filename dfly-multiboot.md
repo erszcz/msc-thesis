@@ -905,13 +905,13 @@ Entry point 0xc016c450
 There are 5 program headers, starting at offset 52
 
 Program Headers:
-  Type      Offset   VirtAddr   PhysAddr   FileSiz MemSiz  Flg Align
-  PHDR      0x000034 0xc0100034 0xc0100034 0x000a0 0x000a0 R   0x4
-  INTERP    0x0000d4 0xc01000d4 0xc01000d4 0x0000d 0x0000d R   0x1
+  Type    Offset   VirtAddr   PhysAddr   FileSiz MemSiz  Flg Align
+  PHDR    0x000034 0xc0100034 0xc0100034 0x000a0 0x000a0 R   0x4
+  INTERP  0x0000d4 0xc01000d4 0xc01000d4 0x0000d 0x0000d R   0x1
       [Requesting program interpreter: /red/herring]
-  LOAD      0x000000 0xc0100000 0xc0100000 0x85a6ec 0x85a6ec R E 0x1000
-  LOAD      0x85a6ec 0xc095b6ec 0xc095b6ec 0x9d313 0x50b454 RW  0x1000
-  DYNAMIC   0x85a6ec 0xc095b6ec 0xc095b6ec 0x00068 0x00068 RW  0x4
+  LOAD    0x000000 0xc0100000 0xc0100000 0x85a6ec 0x85a6ec R E 0x1000
+  LOAD    0x85a6ec 0xc095b6ec 0xc095b6ec 0x9d313 0x50b454 RW  0x1000
+  DYNAMIC 0x85a6ec 0xc095b6ec 0xc095b6ec 0x00068 0x00068 RW  0x4
 ...
 ```
 
@@ -953,7 +953,9 @@ Note that variable `dest` is known as `off` inside the function.
  * the Elf header, load the image at (off)
  */
 static int
-__elfN(loadimage)(struct preloaded_file *fp, elf_file_t ef, u_int64_t off);
+__elfN(loadimage)(struct preloaded_file *fp,
+                  elf_file_t ef,
+                  u_int64_t off);
 ```
 
 Below, the load address is adjusted depending on the architecture.
@@ -968,9 +970,11 @@ low physical address to load the kernel at.
 if (ef->kernel) {
 #ifdef __i386__
 #if __ELF_WORD_SIZE == 64
-    off = - (off & 0xffffffffff000000ull);/* x86_64 relocates after locore */
+    /* x86_64 relocates after locore */
+    off = - (off & 0xffffffffff000000ull);
 #else
-    off = - (off & 0xff000000u);    /* i386 relocates after locore */
+    /* i386 relocates after locore */
+    off = - (off & 0xff000000u);
 #endif
 ```
 
@@ -1026,13 +1030,13 @@ Entry point 0xc013b040
 There are 5 program headers, starting at offset 52
 
 Program Headers:
-  Type      Offset   VirtAddr   PhysAddr   FileSiz MemSiz  Flg Align
-  PHDR      0x000034 0xc0100034 0x00100034 0x000a0 0x000a0 R   0x4
-  INTERP    0x0000d4 0xc01000d4 0x001000d4 0x00019 0x00019 R   0x4
+  Type    Offset   VirtAddr   PhysAddr   FileSiz MemSiz  Flg Align
+  PHDR    0x000034 0xc0100034 0x00100034 0x000a0 0x000a0 R   0x4
+  INTERP  0x0000d4 0xc01000d4 0x001000d4 0x00019 0x00019 R   0x4
       [Requesting program interpreter: /red/herring]
-  LOAD      0x000000 0xc0100000 0x00100000 0x310134 0x310134 R E 0x1000
-  LOAD      0x310134 0xc0411134 0x00411134 0x2b875 0x4662ac RW  0x1000
-  DYNAMIC   0x310134 0xc0411134 0x00411134 0x00068 0x00068 RW  0x4
+  LOAD    0x000000 0xc0100000 0x00100000 0x310134 0x310134 R E 0x1000
+  LOAD    0x310134 0xc0411134 0x00411134 0x2b875 0x4662ac RW  0x1000
+  DYNAMIC 0x310134 0xc0411134 0x00411134 0x00068 0x00068 RW  0x4
 ...
 ```
 
