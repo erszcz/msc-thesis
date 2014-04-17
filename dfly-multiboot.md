@@ -1236,8 +1236,73 @@ the macro anymore.
                   instruction.
                   See `sys/platform/pc32/i386/locore.s:335` for an example.
 
+We're done with `struct bootinfo` once its fields are marked as unused.
+The next line:
+
+```gnuassembler
+    movl    %ebx, R(multiboot_info)
+```
+
+saves the pointer to the Multiboot info structure passed in by GRUB.
+Later, the kernel command line is extracted from the structure
+by the `recover_multiboot_info` procedure and stored in a preallocated
+static page of kernel memory. Copying the whole command line buffer is done
+because of two reasons:
+
+- the buffer is allocated by GRUB and its location is arbitrary;
+  sooner or later the operating system will reuse the memory where
+  it's stored, so it's safer to copy the contents to kernel memory,
+
+- since the location of the buffer is not known beforehand
+  (i.e. can't be foreseen at kernel compile time)
+  it's not obvious how to access it after relocation.
+
+Once the changes of the entry point described in this section were carried
+out the system was able to boot. The boot process at this moment was
+interactive, i.e. since the `struct bootinfo` fields were zeroed,
+the kernel was unable to find a root device and mount the root
+filesystem at `/`.
+This led to a prompt being displayed at boot time,
+requiring to specify the device to be mounted as root.
+Except for that, the system turned out to be fully functional.
+
 
 #### Mounting the root file system
+
+\text{\\}
+
+`dloader` is capable of preparing the kernel environment before booting
+the kernel. In fact, it's got a Forth interpreter built in what makes
+it capable of performing some complicated tasks.
+Setup of the kernel might involve basic things like choosing the root
+device or much more specific ones like fine tuning particular device
+driver or network stack parameters. However, the kernel environment
+is essentially just a simple key-value storage space where keys and
+values are zero-terminated strings whose meaning is left for interpretation
+to particular kernel subsystems.
+
+GRUB is neither aware nor capable of adjusting this kind of BSD specific
+kernel environment. However, the Multiboot specification defines that the
+kernel may be passed a command line.
+It's simple to simulate a key-value kernel environment with a command line
+formatted according to the below scheme:
+
+```
+kernel key1=val1 key2=val2 ...
+```
+
+However, interpreting such a command line requires some logic in the
+kernel aware of the convention. This logic could populate the kernel
+environment just as would `dloader` do.
+
+This logic, though still coupled to the particulars of the bootloader
+which booted the kernel, is definitely out of scope of `locore.s`.
+Moreover, it would be unwise to write this logic in assembly if C is
+easily available just a little later in the boot process.
+
+TODO: subsystem initialization mechanisms,
+      adding multiboot_setup_kenv initializer,
+      finally booting non-interactively
 
 
 ## Booting DragonFly BSD with GRUB on x86-64 {#xr:dfly-x64}
