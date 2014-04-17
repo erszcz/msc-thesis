@@ -1335,7 +1335,7 @@ GPT (GUID Partition Table) is the new partitioning scheme used by UEFI.
 GPT is free of the MBR limitations such as number of primary partitions or
 their sizes still maintaining backwards compatibility with legacy systems
 understanding only MBR.
-The maximum number of partitions on a GTP partitioned volume is 128 with
+The maximum number of partitions on a GPT partitioned volume is 128 with
 the maximum size of a partition (and the whole disk) of 8ZiB (2^70^ bytes).
 
 In essence, UEFI is similar to the Multiboot Specification addressing the
