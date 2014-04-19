@@ -1274,9 +1274,11 @@ Except for that, the system turned out to be fully functional.
 `dloader` is capable of preparing the kernel environment before booting
 the kernel. In fact, it's got a Forth interpreter built in what makes
 it capable of performing some complicated tasks.
-Setup of the kernel might involve basic things like choosing the root
-device or much more specific ones like fine tuning particular device
-driver or network stack parameters. However, the kernel environment
+Most of the time, though, `dloader` is simply used for parameterizing
+the functioning of some kernel subsystem, device driver or network stack.
+Setup of the kernel might also involve basic things like choosing the root
+device.
+However, the kernel environment
 is essentially just a simple key-value storage space where keys and
 values are zero-terminated strings whose meaning is left for interpretation
 to particular kernel subsystems.
@@ -1292,17 +1294,182 @@ kernel key1=val1 key2=val2 ...
 ```
 
 However, interpreting such a command line requires some logic in the
-kernel aware of the convention. This logic could populate the kernel
+kernel aware of the convention. The logic could populate the kernel
 environment just as would `dloader` do.
 
-This logic, though still coupled to the particulars of the bootloader
+This code, though still coupled to the particulars of the bootloader
 which booted the kernel, is definitely out of scope of `locore.s`.
-Moreover, it would be unwise to write this logic in assembly if C is
-easily available just a little later in the boot process.
+Moreover, it would be unwise to write it in assembly if C is easily
+available just a little later in the boot process.
 
-TODO: subsystem initialization mechanisms,
-      adding multiboot_setup_kenv initializer,
-      finally booting non-interactively
+As described in the previous section, the contents of the command line
+passed by GRUB are stored safely into kernel memory in `locore.s`.
+However, the command line contents aren't interpreted until later in the
+boot process. Choosing the exact moment is a bit tricky. On the one hand,
+the support mechanism of the dynamic kernel environment must be setup already,
+on the other hand, the interpretation must be performed as early as possible
+since other initializing subsystems might depend on the information passed
+on the command line.
+
+Fortunately, there exists a subsystem initialization mechanism with
+sophisticated priority management in the DragonFly BSD kernel already.
+Below is a glimpse of the priority setting definitions:
+
+```C
+// sys/sys/kernel.h:90
+/*
+ * Enumerated types for known system startup interfaces.
+ *
+ * Startup occurs in ascending numeric order; the list entries are
+ * sorted prior to attempting startup to guarantee order.  Items
+ * of the same level are arbitrated for order based on the 'order'
+ * element.
+ *
+ * These numbers are arbitrary and are chosen ONLY for ordering; the
+ * enumeration values are explicit rather than implicit to provide
+ * for binary compatibility with inserted elements.
+ *
+ * The SI_SUB_RUN_SCHEDULER value must have the highest lexical value.
+ */
+enum sysinit_sub_id {
+    /*
+     * Special cased
+     */
+    SI_SPECIAL_DUMMY    = 0x0000000,    /* not executed; for linker*/
+    SI_SPECIAL_DONE     = 0x0000001,    /* flag sysinit completion */
+
+    /*
+     * Memory management subsystems.
+     */
+    SI_BOOT1_TUNABLES   = 0x0700000,    /* establish tunable values */
+    SI_BOOT1_COPYRIGHT  = 0x0800000,    /* first use of console*/
+    SI_BOOT1_LOCK       = 0x0900000,    /* lockmgr locks and tokens */
+    SI_BOOT1_VM         = 0x1000000,    /* virtual memory system init*/
+    SI_BOOT1_ALLOCATOR  = 0x1400000,    /* slab allocator */
+    SI_BOOT1_KMALLOC    = 0x1600000,    /* kmalloc inits */
+    SI_BOOT1_POST       = 0x1800000,    /* post boot1 inits */
+
+    /*
+     * Fickle ordering.  objcache and softclock need to know what
+     * ncpus is to initialize properly, clocks (e.g. hardclock)
+     * need softclock to work, and we can't finish initializing
+     * the APs until the system clock has been initialized.
+     * Also, clock registration and smp configuration registration
+     * must occur before SMP.  Messy messy.
+     */
+    SI_BOOT2_LEAVE_CRIT  = 0x1900000,
+    SI_BOOT2_PRESMP      = 0x1a00000,    /* register SMP configs */
+    SI_BOOT2_START_CPU   = 0x1a40000,    /* start CPU (BSP) */
+    ...
+
+    /*
+     * Finish up core kernel initialization and set up the process
+     * abstraction.
+     */
+    SI_BOOT2_BIOS        = 0x1d00000,
+    ...
+
+    /*
+     * Continue with miscellanious system initialization
+     */
+    SI_SUB_CREATE_INIT   = 0x2300000,    /* create the init process */
+    ...
+
+    /*
+     * Root filesystem setup, finish up with the major system
+     * demons.
+     */
+    SI_SUB_ROOT_CONF     = 0xb000000,    /* Find root devices */
+    ...
+    SI_SUB_MOUNT_ROOT    = 0xb400000,    /* root mount*/
+    ...
+    SI_SUB_KTHREAD_INIT  = 0xe000000,    /* init process*/
+    ...
+    SI_SUB_RUN_SCHEDULER = 0xfffffff     /* scheduler: no return*/
+};
+```
+
+As seen in the example listing above, the priorities are defined in wide
+intervals in order to leave room for introducing new subsystems in between
+the existing ones.
+
+Kernel subsystems defined in multiple files around the source code tree
+define the point at which they expect to be initialized.
+Using a declaration instead of of direct control flow passing from one
+subsystem to the next guarantees loose coupling between the components,
+but still maintains the proper relative order of their initialization.
+Subsystems loaded dynamically as kernel modules are also taken into account
+when determining the subsystem initialization order.
+
+Given the described initialization mechanism, the below listing presents
+how the code interpreting the command line passed by GRUB declares its
+requirements as to the moment of initialization:
+
+```C
+// sys/platform/pc32/i386/autoconf.c:500
+#if defined(MULTIBOOT)
+
+#include <sys/libkern.h>
+
+extern char multiboot_cmdline[];
+
+static void
+multiboot_setup_kenv(void)
+{
+    char *key, *val;
+    char *p = multiboot_cmdline;
+
+    /* Did the bootloader pass a command line? */
+    if (*p == '\0')
+        return;
+
+    /* For each key=val pair in the command line set a kenv with
+     * the same key and val. */
+    while ((key = strsep(&p, " ")) != NULL) {
+        /* Skip extra spaces. */
+        if (*key == '\0')
+            continue;
+        val = key;
+        strsep(&val, "=");
+        if (val != NULL)
+            ksetenv(key, val);
+    }
+}
+SYSINIT(multiboot_setup_kenv, SI_SUB_ROOT_CONF, SI_ORDER_MIDDLE,
+        multiboot_setup_kenv, NULL)
+
+#endif
+```
+
+The `SYSINIT` macro is used to define the subsystem name
+(`multiboot_setup_kenv`), initialization order
+(`SI_SUB_ROOT_CONF` and `SI_ORDER_MIDDLE`)
+and initialization function (again `multiboot_setup_kenv`).
+Please note that this initialization step must be done between
+`SI_BOOT1_POST` and `SI_SUB_MOUNT_ROOT`.
+
+At `SI_BOOT1_POST` the static kernel environment (inherited from the
+bootloader in case of `dloader`) is copied into the dynamic kernel
+environment accessible via a kernel API. Before this operation,
+the dynamic kernel environment is not initialized yet and not
+accessible programmatically.
+
+At `SI_SUB_MOUNT_ROOT` the kernel mounts the root device and expects any
+hints as to what device to use to already be present in the dynamic environment.
+`SI_SUB_ROOT_CONF` seems to be a reasonable step at which to perform
+the GRUB command line interpretation.
+
+The initialization function uses `strsep()` implemented in the kernel
+C library (`sys/libkern.h`) to parse the command line and set a `kenv`
+for each `key=val` entry on the command line.
+Malformed entries (i.e. not containing an equal sign `=`) are ignored.
+
+This way, given GRUB passes a valid value for `vfs.root.mountfrom`
+(e.g. `vfs.root.mountfrom=ufs:/dev/ad0s1a`) the code in `sys/kern/vfs_conf.c`
+responsible for mounting the root file system is aware of the device to be used
+for that purpose.
+This makes the boot process using GRUB fully automatic and seamless from
+the GRUB prompt straight to the login shell.
 
 
 ## Booting DragonFly BSD with GRUB on x86-64 {#xr:dfly-x64}
