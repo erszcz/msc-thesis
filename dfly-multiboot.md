@@ -1080,7 +1080,7 @@ i.e. to adjust the low level assembly routine controlling the kernel
 just after it's jumped to.
 
 
-### Adjusting the entry point
+### Adjusting the kernel entry point {#xr:entry-point}
 
 Output of `readelf` in the previous section tells us that the entry
 address of the kernel is `0xc013b040` (more or less, depending on the
@@ -1459,9 +1459,10 @@ the GRUB prompt straight to the login shell.
 
 ## Booting DragonFly BSD with GRUB on x86-64 {#xr:dfly-x64}
 
-In case of the x86-64 architecture the problem is more complicated.
-The Multiboot Specification defines an interface only for loading 32 bit
-operating systems due to two reasons.
+In case of the x86-64 architecture the problem of loading the kernel by
+GRUB is more complicated.
+The Multiboot Specification only defines an interface for loading 32 bit
+operating systems. This is due to two reasons.
 
 Firstly, when the specification was defined in 1995, the x86-64 was still
 to be unknown for the next 5 years.[^ft:amd64]
@@ -1482,34 +1483,47 @@ The kernel programmer would have two choices: either leave the mapping as
 is or write some custom code to reinitialize the page table hierarchy
 upon entry into the kernel.
 The former is limiting.
-The latter would defeat the initial purpose of the specification, i.e.
-to make the OS startup procedure as simple as possible.
+The latter is feasible as the kernel manipulates the memory management
+settings as part of usual process context switching either way.
 
-Given the above, from the point of view of creating a universal bootloader
-**the CPU design decision to require enabling of the virtual addressing before
-entering the long mode is a flaw.**
-The CPU should be able to enter the long mode with a simple one-to-one
-logical-to-physical address mapping;
-the bootloader would then be able to load the 64 bit kernel anywhere into
-the 64 bit addressable memory and run it;
-the kernel itself would be responsible for setting up the memory mapping
-scheme according to its own requirements.
+An alternative approach, however, would be to allow the processor to enter
+_real long mode_ in which the addresses would be 64 bit wide and physical.
+That way the bootloader would be freed from setting up memory management
+on behalf of the OS.
+The kernel would be responsible for setting up memory management
+from the ground up in the most sensible way.
+This approach would also require the kernel to use the relocation macro
+technique (see the `R` macro description in section
+[_\ref{xr:entry-point}{\ }Adjusting the kernel entry point_](#xr:entry-point))
+to make the code linked for high logical addresses to function properly
+before setting up the page table hierarchy and relocating.
+
+Since GRUB doesn't enter long mode and can't make use of 64 bit addressing,
+no matter whether the architecture allows for that with or without paging,
+the only way to boot a 64 bit operating system by GRUB is by embedding
+a piece of 32 bit code into the 64 bit kernel image.
 
 
-### The workaround
+### Embedding a 32 bit entry point into a 64 bit kernel
 
 Given the aforementioned limitations of GRUB and the CPU the cleanest
-possible way of loading the 64 bit kernel is out of reach.
-It does not mean, however, that adapting the x86-64 DragonFly BSD kernel
-to the Multiboot Specification is impossible.
+possible way of loading a 64 bit kernel is by embedding some 32 bit code
+into the 64 bit kernel.
+This limits the address the kernel can be loaded at to the width of 32 bits.
 
-The idea is to embed a portion of 32 bit code inside the 64 bit kernel
-executable and only for the sake of the bootloader pretend to be a 32 bit
-binary.
+In case of DragonFly BSD this 32 bit code would realize roughly the same
+functionality as `sys/boot/pc32/libi386/x86_64_tramp.S` which is part
+of the native `dloader`.
+This functionality is:
 
-This code logic would be similar to the code found in the 64 bit
-extension of the BSD `loader`, i.e. it would set up paging, enter the long
-mode and jump to the 64 bit kernel entry point.
+- setting a preliminary memory mapping;
+  this mapping actually maps each gigabyte of logical memory to point
+  to the first gigabyte of physical memory;
+  that way the kernel may be loaded to low physical memory but still be
+  linked to use high logical addresses,
+
+- enabling paging, entering long mode and jumping to the 64 bit entry
+  point of the kernel.
 
 Implementation of this approach is yet to be carried out.
 
