@@ -601,9 +601,7 @@ this ELF requirement would lead to a serious problem for booting DragonFly
 BSD with GRUB, because of the kernel being natively stored as an ELF file.
 
 
-#### Embedding the Multiboot header
-
-\text{\\}
+### Embedding the Multiboot header
 
 The most natural way of embedding the Multiboot header into the kernel
 is defining it in the assembly language.
@@ -676,9 +674,7 @@ This is necessary, but not enough, to comply with the requirement of placing
 it in the first 8KiB of the kernel image.
 
 
-#### What is a linker script?
-
-\text{\\}
+### What is a linker script?
 
 Executable and Linking Format Specification [@tis1995elf] describes the
 format of an object file -- e.g. the DragonFly BSD kernel executable.
@@ -743,9 +739,7 @@ but the kernel uses them for calculating the offset and size
 of the `.bss` section which the it must initialize itself.
 
 
-#### Modifying the linker script
-
-\text{\\}
+### Modifying the linker script
 
 The language accepted by `ld` has constructs for setting symbol/section
 virtual addresses, overriding their linear (or load) addresses,
@@ -887,9 +881,7 @@ The rest of the system should not need to be aware of what bootloader
 loaded the kernel.
 
 
-#### Loading the image: `dloader`
-
-\text{\\}
+### Loading the image: `dloader`
 
 By default, the DragonFly BSD kernel image is linked with virtual
 and physical addresses being the same.
@@ -983,9 +975,7 @@ kernel is linked with aren't important from `dloader`'s perspective.
 They can be freely adjusted in any way that is convenient.
 
 
-#### Loading the image: GRUB
-
-\text{\\}
+### Loading the image: GRUB
 
 The ending remark of the previous section is very fortunate,
 as GRUB is much stricter than `dloader` in following the ELF
@@ -1091,9 +1081,7 @@ i.e. to adjust the low level assembly routine controlling the kernel
 just after it's jumped to.
 
 
-#### Adjusting the entry point
-
-\text{\\}
+### Adjusting the entry point
 
 Output of `readelf` in the previous section tells us that the entry
 address of the kernel is `0xc013b040` (more or less, depending on the
@@ -1267,9 +1255,7 @@ requiring to specify the device to be mounted as root.
 Except for that, the system turned out to be fully functional.
 
 
-#### Mounting the root file system
-
-\text{\\}
+### Mounting the root file system
 
 `dloader` is capable of preparing the kernel environment before booting
 the kernel. In fact, it's got a Forth interpreter built in what makes
