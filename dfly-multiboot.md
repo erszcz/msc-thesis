@@ -21,9 +21,8 @@ along with an implementation for the Intel 386 architecture.
 I~present the changes made to GRUB,
 a bootloader implementing the specification,
 in order to allow it to boot DragonFly BSD.
-I~also pinpoint an issue with the modern x86-64 architecture
-and the negative impact a~wrong CPU design decision
-may have on the whole boot process.
+I~also pinpoint an issue with GRUB corresponding
+to the modern x86-64 architecture.
 
 \end{abstract}
 
