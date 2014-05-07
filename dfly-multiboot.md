@@ -1515,6 +1515,11 @@ mode and jump to the 64 bit kernel entry point.
 Implementation of this approach is yet to be carried out.
 
 
+# Tools of the Trade
+
+TODO: insert references to books/articles on the tools used
+
+
 # Related work
 
 There is a number of projects revolving around the issue of bootstrapping.
