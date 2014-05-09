@@ -1509,23 +1509,35 @@ a piece of 32 bit code into the 64 bit kernel image.
 Given the aforementioned limitations of GRUB and the CPU the cleanest
 possible way of loading a 64 bit kernel is by embedding some 32 bit code
 into the 64 bit kernel.
-This limits the address the kernel can be loaded at to the width of 32 bits.
+This limits the choice of kernel load location to the 32 bit addressable space.
 
 In case of DragonFly BSD this 32 bit code would realize roughly the same
 functionality as `sys/boot/pc32/libi386/x86_64_tramp.S` which is part
-of the native `dloader`.
-This functionality is:
+of the native `dloader`:
 
-- setting a preliminary memory mapping;
-  this mapping actually maps each gigabyte of logical memory to point
-  to the first gigabyte of physical memory;
-  that way the kernel may be loaded to low physical memory but still be
-  linked to use high logical addresses,
+- It would set a preliminary memory mapping.
+  Each (without loss of generality 1GiB in size) block of logical memory would
+  point to the first block of physical memory.
+  That way the kernel could be loaded to low physical memory but still be
+  linked to use high logical addresses.
 
-- enabling paging, entering long mode and jumping to the 64 bit entry
+  TODO: maybe a diagram of the mapping?
+
+- It would enable paging, enter long mode and jump to the 64 bit entry
   point of the kernel.
 
-Implementation of this approach is yet to be carried out.
+One problem with this approach is that there would be two distinct entry
+points to the kernel: one for `dloader`, which is capable of booting the
+kernel straight into long mode, and another for protected mode only GRUB.
+That would require using the _a.out kludge_, i.e. apart from embedding the
+Multiboot header into the kernel image, embedding some extra fields which
+would override the meta information already stored in the ELF headers.
+As the names suggests, the technique is hardly elegant,
+but in case of two possible entry points might be unavoidable.
+
+Implementation of this approach was tried during the project,
+but due to the involved complexity and limited amount of time
+was not successful. This path is open for pursuing in the future.
 
 
 # Tools of the Trade
