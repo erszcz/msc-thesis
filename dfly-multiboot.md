@@ -1534,6 +1534,8 @@ Multiboot header into the kernel image, embedding some extra fields which
 would override the meta information already stored in the ELF headers.
 As the names suggests, the technique is hardly elegant,
 but in case of two possible entry points might be unavoidable.
+In other words, the _a.out kludge_ is another way apart from ELF headers
+GRUB is able to use to read the metadata from the loaded file.
 
 Implementation of this approach was tried during the project,
 but due to the involved complexity and limited amount of time
