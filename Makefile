@@ -15,5 +15,15 @@ html: dfly-multiboot.html
 
 dfly-multiboot.pdf \
 dfly-multiboot.tex \
-dfly-multiboot.html: dfly-multiboot.md preamble.tex title.tex
+dfly-multiboot.html: dfly-multiboot.md preamble.tex title.tex images
 	$(BUILD) -o $@ $<
+
+images: images-ditaa
+
+DITAA_SRC := $(wildcard images/*.ditaa)
+DITAA_PNG := $(patsubst %.ditaa,%.png,$(DITAA_SRC))
+
+images-ditaa: $(DITAA_PNG)
+
+images/%.png: images/%.ditaa
+	ditaa $< -o $@

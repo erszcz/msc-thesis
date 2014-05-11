@@ -1515,16 +1515,26 @@ In case of DragonFly BSD this 32 bit code would realize roughly the same
 functionality as `sys/boot/pc32/libi386/x86_64_tramp.S` which is part
 of the native `dloader`:
 
-- It would set a preliminary memory mapping.
-  Each (without loss of generality 1GiB in size) block of logical memory would
-  point to the first block of physical memory.
-  That way the kernel could be loaded to low physical memory but still be
-  linked to use high logical addresses.
+-   It would set a preliminary memory mapping.
+    Each (without loss of generality 1GiB in size) block of logical memory would
+    point to the first block of physical memory (see figure \ref{fig:mapping}).
+    That way the kernel could be loaded to low physical memory but still be
+    linked to use high logical addresses.
+    Both the prerelocation and postrelocation code would run without requiring
+    tricks such as the `R` prerelocation macro.
 
-  TODO: maybe a diagram of the mapping?
+    \begin{figure}[htbp]
+    \centering
+    \includegraphics[scale=0.50]{images/mapping.png}
+    \caption{Each 1GiB block of logical memory is mapped to the first 1GiB block
+             of physical memory (64 bit address space).
+             Before relocation the code executes from \emph{prereloc kernel},
+             after relocation from \emph{postreloc kernel}.}
+    \label{fig:mapping}
+    \end{figure}
 
-- It would enable paging, enter long mode and jump to the 64 bit entry
-  point of the kernel.
+-   It would enable paging, enter long mode and jump to the 64 bit entry
+    point of the kernel.
 
 One problem with this approach is that there would be two distinct entry
 points to the kernel: one for `dloader`, which is capable of booting the
