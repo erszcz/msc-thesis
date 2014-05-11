@@ -1680,33 +1680,12 @@ However, the concept needs thorough evaluation.
 
 # Literature
 
-TODO: embed bibtex or whatever makes sense, for now it's just copy-n-paste
-
-
 ## Printed
-
-#. The DragonFlyBSD Operating System,
-   dragonflybsd.asiabsdcon04.pdf
-
-#. The Design and Implementation of the 4.4BSD Operating System,
-   design-44bsd-book.html
 
 #. Intel 64 and IA-32 Architectures Software Developer’s Manual,
    IA32-1.pdf and other IA32-XYZ.pdfs
 
-#. Introduction to 64 Bit Intel Assembly Language Programming for Linux,
-   Ray Seyfarth
-
-#. Operating System Concepts, Silberschatz, Galvin, Gagne,
-   silberschatz-operating-system-concepts.pdf
-
 #. BIOS Boot Specification, Version 1.01, Jan 11, 1996, specs-bbs101.pdf
-
-#. The UNIX Time-Sharing System, D. M. Ritchie and K. Thompson, 1978,
-   ritchie78unix.pdf
-
-#. Tool Interface Standard Executable and Linking Format Specification,
-   Version 1.2, TIS Comitee, May 1995, elf.pdf
 
 #. Intel 80386 Programmer's Reference Manual, 1986, i386.pdf
 
@@ -1717,14 +1696,8 @@ TODO: embed bibtex or whatever makes sense, for now it's just copy-n-paste
 #. Multiboot Specification version 0.6.96, \
    http://www.gnu.org/software/grub/manual/multiboot/multiboot.html
 
-#. FreeBSD Architecture Handbook, \
-   http://www.freebsd.org/doc/en/books/arch-handbook/
-
 #. The new DragonFly BSD Handbook, \
    http://www.dragonflybsd.org/docs/newhandbook/
-
-#. GNU GRUB Manual 2.00, \
-   http://www.gnu.org/software/grub/manual/grub.html
 
 #. MIT PDOS Course 6.828: Operating System Engineering Notes,
    Parallel and Distributed Operating Systems Group, MIT, \
@@ -1737,8 +1710,6 @@ TODO: embed bibtex or whatever makes sense, for now it's just copy-n-paste
 
 #. asm64-handout.pdf - AT&T asm syntax examples, lot of refs
 
-
-TODO: clean up the references/citations stuff up
 
 [see @hsudfly]
 
