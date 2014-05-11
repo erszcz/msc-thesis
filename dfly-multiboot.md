@@ -1542,9 +1542,17 @@ but due to the involved complexity and limited amount of time
 was not successful. This path is open for pursuing in the future.
 
 
-# Tools of the Trade
+# Tools of a Kernel Developer's Trade
 
 TODO: insert references to books/articles on the tools used
+
+- DragonFly BSD
+- GRUB
+- VirtualBox
+- qemu
+- gdb
+- binutils: readelf, objdump
+- gcc
 
 
 # Further Work
