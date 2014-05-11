@@ -1587,12 +1587,12 @@ kernel from a UFS filesystem,
 but the hallmark feature of DragonFly BSD is the HAMMER filesystem.
 Enabling GRUB to read HAMMER and boot from a HAMMER volume would be
 a major step forward.
-HAMMER2 design is described by @dillon2011hammer2, while more reading
+HAMMER2 design is described by @dillon2011hammer2, while more written word
 on the initial version of the filesystem is available from @lorch2009porting
 and @oppegaard2009evaluation.
 
 
-# Related work
+# Related Work
 
 There is a number of projects revolving around the issue of bootstrapping.
 
