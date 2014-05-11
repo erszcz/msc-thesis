@@ -359,8 +359,10 @@ incompatibilities:
 - fields describing sizes and offsets are 64 bit wide to accommodate
   the respective parameters of modern hardware.
 
+<!--
 TODO: there could be an appendix on BSD partitioning-related parlance:
       slices, partitions, labels.
+-->
 
 GRUB is extensible with regard to the partition tables and file systems
 it is able to understand.
@@ -1554,7 +1556,9 @@ was not successful. This path is open for pursuing in the future.
 
 # Tools of a Kernel Developer's Trade
 
+<!--
 TODO: insert references to books/articles on the tools used
+-->
 
 - DragonFly BSD
 - GRUB
