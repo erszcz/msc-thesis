@@ -1554,6 +1554,9 @@ TODO: insert references to books/articles on the tools used
 - binutils: readelf, objdump
 - gcc
 
+Of course, parts of the code written during this project are 64 bit assembly.
+The book by @seyfarth2011introduction was a great help in putting these down.
+
 
 # Further Work
 
