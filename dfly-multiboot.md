@@ -1659,6 +1659,8 @@ kernel is linked to use.
 However, the concept needs thorough evaluation.
 
 
+<!--
+
 # Literature
 
 TODO: embed bibtex or whatever makes sense, for now it's just copy-n-paste
@@ -1724,6 +1726,8 @@ TODO: clean up the references/citations stuff up
 [see @hsudfly]
 
 @hsudfly states some stuff.
+
+-->
 
 
 # References
