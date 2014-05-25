@@ -74,7 +74,7 @@ More on the specification and GRUB is available in
 [ext:grub]: http://www.gnu.org/software/grub/
 [ext:gnu]: https://www.gnu.org/
 
-The contributions of this paper are following:
+The main points of this paper are:
 
 -   [_\ref{xr:booting-bsd}{\ }Booting a BSD system_](#xr:booting-bsd)
     gives an approachable introduction to the boot process of a BSD-like
