@@ -1560,13 +1560,59 @@ was not successful. This path is open for pursuing in the future.
 TODO: insert references to books/articles on the tools used
 -->
 
-- DragonFly BSD
-- GRUB
-- VirtualBox
-- qemu
-- gdb
-- binutils: readelf, objdump
-- gcc
+> _So, you want to write a kernel module. You know C,
+> you've written a few normal programs to run as
+> processes, and now you want to get to where the
+> real action is, to where a single wild pointer can
+> wipe out your file system and a core dump means a reboot._
+>
+> – @salzman2001linux, The Linux Kernel Module Programming Guide
+
+Well... not really. Thankfully, the days when kernel debugging was done
+using a serial printer plugged into a spare headless PC and a core dump
+meant a reboot are gone now thanks to virtualization.
+
+The tools I used for virtualization are VirtualBox and QEMU with Linux
+KVM (Kernel-based Virtual Machine).
+Although the work was started using a VirtualBox virtual machine I had
+to switch to QEMU/KVM in the middle of the project because of VirtualBox
+not supporting debugging with GNU gdb.
+Moreover, the 32 bit and 64 bit systems had to use separate virtual machines,
+so all the work with virtual machine management and system installation and setup
+had to be done twice.
+
+As already mentioned, GNU gdb was used for GRUB and kernel debugging.
+Since the kernel image is linked to use high logical addresses and before
+relocation (just after being loaded by the bootloader) the kernel operates
+from a physical address,
+most of the debugging had to be done by setting breakpoints at manually
+calculated physical addresses instead of using symbol names.
+The process was arduous, very error prone and consumed a lot of time.
+
+The main piece of software worked on during the project was DragonFly BSD.
+@hsudfly introduces the system well and points out some of its differences
+from the parent FreeBSD.
+Just to name a few features which stand out:
+
+- DragonFly BSD tries to scale linearly on modern multicore CPUs
+  by multiplicating certain subsystems and data structures (e.g. the
+  scheduler, memory allocator, ...) onto all cores and using lockless
+  algorithms where possible,
+  what allows for mostly asynchronous operation of all cores,
+
+- HAMMER (and upcoming HAMMER2) filesystem,
+  whose feature list is too long to quote here,
+  but the most prominent are the built-in historical access
+  and master-to-multiple-slaves streaming,
+
+- Swapcache, which is an extension to the well-known swap partition mechanism;
+  the feature allows an SSD swap partition to cache any filesystem operation(s)
+  in order to speed up file systems stored on non-SSD devices.
+
+All the operations on the kernel image and verification of
+changes in the linker script had to be checked by inspecting the resulting file.
+The utilities for these tasks are `readelf` and `objdump` which come from
+the GNU binutils package.
 
 Of course, parts of the code written during this project are 64 bit assembly.
 The book by @seyfarth2011introduction was a great help in putting these down.
