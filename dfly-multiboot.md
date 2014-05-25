@@ -1713,14 +1713,6 @@ of the boot time peculiarities and cruft from the OS while initiatives
 like the Multiboot Specification and UEFI provide a clean interface for
 new and existing OS implementations.
 
-The extension of the Multiboot Specification to cover loading of 64 bit
-operating systems might be an interesting path of research.
-This might be achieved by constructing a generally acceptable logical to
-physical memory mapping for at least the size of the kernel (contained
-inside the ELF binary) and spanning the whole range of addresses the
-kernel is linked to use.
-However, the concept needs thorough evaluation.
-
 
 <!--
 
@@ -1755,11 +1747,6 @@ However, the concept needs thorough evaluation.
 ## More refs
 
 #. asm64-handout.pdf - AT&T asm syntax examples, lot of refs
-
-
-[see @hsudfly]
-
-@hsudfly states some stuff.
 
 -->
 
