@@ -1617,6 +1617,10 @@ the GNU binutils package.
 Of course, parts of the code written during this project are 64 bit assembly.
 The book by @seyfarth2011introduction was a great help in putting these down.
 
+The 6.828: Operating System Engineering course material from MIT [@mitpdosos],
+as well as the source code and its commentary
+of the Xv6 teaching operating system [@coxxv6] were also of considerable help.
+
 
 # Further Work
 
