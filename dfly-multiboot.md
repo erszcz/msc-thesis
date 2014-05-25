@@ -1594,9 +1594,9 @@ The main piece of software worked on during the project was DragonFly BSD.
 from the parent FreeBSD.
 Just to name a few features which stand out:
 
-- DragonFly BSD tries to scale linearly on modern multicore CPUs
-  by multiplicating certain subsystems and data structures (e.g. the
-  scheduler, memory allocator, ...) onto all cores and using lockless
+- DragonFly BSD tries to scale linearly on modern multi-core CPUs
+  by multiplication of certain subsystems and data structures (e.g. the
+  scheduler, memory allocator, ...) onto all cores and using non-blocking
   algorithms where possible,
   what allows for mostly asynchronous operation of all cores,
 
