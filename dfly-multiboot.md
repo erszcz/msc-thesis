@@ -326,15 +326,15 @@ It turns out that it can.
 
 ## State of the Art
 
-Besides[^ft:chainloading] loading and booting operating system kernels,
-GRUB is capable of so called _chain loading_.
+Besides loading and booting operating system kernels,
+GRUB is capable of so called _chain loading_[^ft:chainloading].
 This is a technique of substituting the memory contents of the running program
 with a new program and passing it the control flow.
 The UNIX `exec(2)` system call is an application of the same technique.
 
 [^ft:chainloading]: In fact it's not true that GRUB can chain load besides
                     booting OS kernels.
-                    Chain loading is _how_ it boots both those kernels
+                    Chain loading is _how_ it boots both these kernels
                     and loads other bootloaders.
 
 By chain loading GRUB is able to load other bootloaders which in turn
@@ -356,7 +356,6 @@ to one universal bootloader doesn't apply anymore due to the reliance
 on `dloader`.
 Neither the seamless graphical transition from power-on to useful desktop
 is achievable when relying on chain loading.
-
 Therefore, chain loading is unsatisfactory.
 
 
