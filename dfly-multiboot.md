@@ -469,8 +469,7 @@ responsible for any file system corruption.
 ### `part_dfly` GRUB module implementation {#xr:part_dfly}
 
 The newly added support for `disklabel64` partitioning scheme was located
-in `grub-core/partmap/dfly.c` file as could be partially anticipated from
-the previous section.
+in `grub-core/partmap/dfly.c` file.
 In order to make the new module build along with the rest of GRUB
 a few changes had to be introduced:
 
