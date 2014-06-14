@@ -393,7 +393,6 @@ kernel but another one is finding and loading it from the disk.
 Fortunately, the main file system used by DragonFly BSD is UFS (the Unix
 file system) which is one of the core traditional Unix technologies
 and is already supported by GRUB.
-
 Alas, to get to the file system we must first understand the partition table.
 
 Extending GRUB to support a new partition table or file system type
