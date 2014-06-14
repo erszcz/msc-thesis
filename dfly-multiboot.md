@@ -270,7 +270,7 @@ which never returns -- it finalizes the boot process.
 
 ## x86-64 kernel
 
-On x86-64 initialization of the kernel is performed slightly differently
+On x86-64 initialization of the kernel is performed a bit differently
 and in fact is less of a hassle.
 As `loader` has already enabled paging as a requirement to enter
 the long mode the CPU is already running in that mode and the jump
