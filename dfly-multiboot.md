@@ -365,7 +365,7 @@ One of the things a bootloader does is understanding the disk
 layout of the machine it is written for -- the partition table and file system
 on which the files of the operating system are stored.
 
-Traditionally, systems of the BSD family (among with Solaris back in the
+Traditionally, systems of the BSD family (along with Solaris, back in the
 day called SunOS) used the `disklabel` partitioning layout.
 Unfortunately, DragonFly BSD has diverged in this area from the main tree.
 It introduced a new partition table layout called `disklabel64` which
