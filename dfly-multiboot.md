@@ -361,6 +361,12 @@ Therefore, chain loading is unsatisfactory.
 
 ## Making GRUB understand `disklabel64`
 
+The module for reading `disklabel64` described in this section
+[is already included in GRUB][ext:grub-dfly].
+That is one of the main contributions of this work.
+
+[ext:grub-dfly]: http://git.savannah.gnu.org/cgit/grub.git/commit/?id=1e908b34a6c13ac04362a1c71799f2bf31908760
+
 One of the things a bootloader does is understanding the disk
 layout of the machine it is written for -- the partition table and file system
 on which the files of the operating system are stored.
@@ -409,12 +415,6 @@ of written documentation the GRUB implementation was closely based
 on the original header file found in the DragonFly BSD
 source tree (`sys/disklabel64.h`) and the behaviour of the userspace
 utility program `disklabel64`.
-
-The module responsible for reading `disklabel64` this section refers
-to [is already included in GRUB][ext:grub-dfly].
-That is one of the main contributions of the project this work is about.
-
-[ext:grub-dfly]: http://git.savannah.gnu.org/cgit/grub.git/commit/?id=1e908b34a6c13ac04362a1c71799f2bf31908760
 
 
 ### GRUB source code organization
