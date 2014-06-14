@@ -429,7 +429,7 @@ is located at [http://git.savannah.gnu.org/grub.git][ext:grub-git].
 
 GRUB uses, as one might expect, GNU Autotools as its build system.
 Since the source tree, while well organized,
-might be intimidating at first sight,
+might be intimidating at first glance,
 a short overview of its contents follows.
 
 The project comes with a set of helper utilities meant to be run from a
