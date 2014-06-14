@@ -227,7 +227,7 @@ already running in the protected mode, is actually quite a
 capable piece of software.
 It allows for choosing which kernel to boot, whether to
 load any extra modules, configuring the environment,
-booting from encrypted disks.
+and booting from encrypted disks.
 It is an ELF binary as is the kernel itself.
 In case of a 64 bit system, the `loader` is capable of entering
 the _long mode_[^ft:longmode],
