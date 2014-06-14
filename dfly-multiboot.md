@@ -50,7 +50,7 @@ beforehand location (e.g. a hard drive or a network interface) and running it.
 That program is called _the bootloader_ and is responsible
 for loading the operating system.
 A more detailed description of the process is given in
-[_\ref{xr:booting-bsd}{\ }Booting a BSD system_](#xr:booting-bsd).
+[_\ref{xr:booting-bsd}{.\ }Booting a BSD system_](#xr:booting-bsd).
 
 The multitude of problems involved in implementing a bootloader for each
 combination of an operating system and hardware platform in use led
@@ -61,7 +61,7 @@ the bootloader which came to existence thanks to the effort of [GNU][ext:gnu]
 and is one of the most widely used bootloaders in the FOSS
 (Free and Open Source Software) world.
 More on the specification and GRUB is available in
-[_\ref{xr:mb-grub}{\ }The Multiboot Specification and GRUB_](#xr:mb-grub).
+[_\ref{xr:mb-grub}{.\ }The Multiboot Specification and GRUB_](#xr:mb-grub).
 
 [ext:multiboot]: http://www.gnu.org/software/grub/manual/multiboot/multiboot.html
 [ext:grub]: http://www.gnu.org/software/grub/
@@ -69,7 +69,7 @@ More on the specification and GRUB is available in
 
 This work elaborates on the following topics:
 
--   [_\ref{xr:booting-bsd}{\ }Booting a BSD system_](#xr:booting-bsd)
+-   [_\ref{xr:booting-bsd}{.\ }Booting a BSD system_](#xr:booting-bsd)
     gives an approachable introduction to the boot process of a BSD-like
     operating system on the Intel x86 architecture.
     This section should also make the need for simplification of the boot
@@ -83,7 +83,7 @@ This work elaborates on the following topics:
     This section shows how GRUB makes the boot process seem simpler than it
     really is.
 
--   Section [_\ref{xr:dfly-x86}{\ }Booting DragonFly BSD with GRUB on x86_](#xr:dfly-x86)
+-   Section [_\ref{xr:dfly-x86}{.\ }Booting DragonFly BSD with GRUB on x86_](#xr:dfly-x86)
     provides a description of changes necessary to make the system conform
     to the version of the specification targeted at the 32bit Intel
     architecture.
@@ -100,7 +100,7 @@ This work elaborates on the following topics:
 
     This is the core part of this work.
 
--   [_\ref{xr:dfly-x64}{\ }Booting DragonFly BSD with GRUB on x86-64_](#xr:dfly-x64)
+-   [_\ref{xr:dfly-x64}{.\ }Booting DragonFly BSD with GRUB on x86-64_](#xr:dfly-x64)
     covers why the same approach can't be taken on the x86-64 architecture
     and how, even in the light of these differences,
     the system could be modified to work with GRUB on this architecture.
@@ -1489,7 +1489,7 @@ The kernel would be responsible for setting up memory management
 from the ground up in the most sensible way.
 This approach would also require the kernel to use the relocation macro
 technique (see the `R` macro description in section
-[_\ref{xr:entry-point}{\ }Adjusting the kernel entry point_](#xr:entry-point))
+[_\ref{xr:entry-point}{.\ }Adjusting the kernel entry point_](#xr:entry-point))
 to make the code linked for high logical addresses to function properly
 before setting up the page table hierarchy and relocating.
 
