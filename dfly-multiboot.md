@@ -487,7 +487,7 @@ on-disk structures, a single callback function called by GRUB from outside
 the module and some initialization and finalization boilerplate code.
 
 The first structure actually is _the disklabel_, i.e. a header containing
-some meta information about the disk along with a table of entries
+some meta information about the disk, along with a table of entries
 describing the consecutive partitions:
 
 ```C
@@ -508,7 +508,7 @@ As can be seen from the above listing, only fields strictly necessary
 to enable read support of the disklabel are included in the structure
 definition.
 This is due to two guides -- the limitations of the embedded environment
-GRUB is running in and the design decision that GRUB ought not to have
+that GRUB is running in, and the design decision that GRUB ought not to have
 write support of any on-disk data for safety and security reasons.
 
 The second structure is a disklabel entry, i.e. a description of a
@@ -552,18 +552,18 @@ counted from 0 while partitions from 1),
 while the first DragonFly BSD subpartition of that MS-DOS
 partition as `(hd0,msdos2,dfly1)`.
 
-In this light, it should be clearer how the GRUB partition recognition
-loop mentioned above works.
-Each partition type callback (e.g. `dfly_partition_map_iterate`,
-`grub_partition_msdos_iterate`, ...) is first
-run on the raw device to find a partition table.
-Then, consecutively, on each partition found in the table
+In this light, it should be clearer how the GRUB is partition recognition
+loop (mentioned above) works.
+First, each partition type callback (e.g. `dfly_partition_map_iterate`,
+`grub_partition_msdos_iterate`, ...) is run on the raw device
+to find a partition table.
+Then, it is run on each partition found in the table
 (by using the `grub_partition_iterate_hook_t hook` parameter).
-Such a discovery procedure leads to at most two level deep partition nesting
+Such a discovery procedure leads to at most two-level partition nesting,
 as in the `(hd0,msdos2,dfly1)` example.
 
-The automatic partition table and file system discovery tests located
-in `tests/` directory of GRUB source tree rely on GNU Parted.
+The tests for automatic partition table and file system discovery,
+located in `tests/` directory of GRUB source tree, rely on GNU Parted.
 Being a partitioning utility, Parted, unlike GRUB, supports full read
 and write access to a number of partition table and file system formats.
 Unfortunately, `disklabel64` is not one of them.
@@ -584,7 +584,7 @@ and involves the following steps:
 - once in the kernel, interpreting the information passed in by GRUB
   and performing any relevant setup to successfully start up the system.
 
-However, things get hairy, when we get to the details.
+However, things get hairy when we get to the details.
 The foremost issue is compatibility with the existing booting strategy.
 In other words, all changes done to the kernel must be backwards
 compatible with `dloader` not to break the already existing boot path.
