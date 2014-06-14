@@ -181,7 +181,7 @@ contained within them.
 ## First stage: `boot0`
 
 The code contained in MBR is `boot0` - the first stage of the BSD bootloader.
-`boot0` hardly knows more than absolutely necessary to boot the next
+`boot0` does not know more than absolutely necessary to boot the next
 stage; it understands the partition table and can choose one of the four
 primary partitions to boot the later stage from.
 After the choice is done it just loads the
