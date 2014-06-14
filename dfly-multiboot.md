@@ -30,44 +30,83 @@ I~also pinpoint certain issues in GRUB with respect to the x86-64 architecture.
 \pagenumbering{arabic}
 
 
-# Introduction
+# Introduction {#xr:intro}
 
-[Wikipedia states][ext:wiki-os] that _an operating system (OS) is a collection
-of software that manages computer hardware resources and provides common
-services for computer programs._
-In other words, an operating system is a computer program which allows
-other programs to run. What, then, allows the operating system to run if
-itself it cannot rely on an operating system?
-In particular, what starts the operating system?
-
-[ext:wiki-os]: http://en.wikipedia.org/wiki/Operating_system
-
-The problem at hand is as old as computing itself. So is the concept
-of _bootstrapping_ or, to put it simply, starting the computer.
-Bootstrapping, _booting_ for short,
-relies on the machine being hardwired to read a simple program from a known
-beforehand location (e.g. a hard drive or a network interface) and running it.
+The concept of _bootstrapping_, or _booting_ for short,
+is as old as computing itself.
+Bootstrapping relies on the machine being hardwired to read a simple program
+from a location known beforehand (e.g. a hard drive or a network interface)
+and running it.
 That program is called _the bootloader_ and is responsible
 for loading the operating system.
-A more detailed description of the process is given in
-[_\ref{xr:booting-bsd}{.\ }Booting a BSD system_](#xr:booting-bsd).
+
+Usually, a bootloader is crafted towards a particular operating system and
+hardware platform, as is the case with `loadlin`[^ft:loadlin] or LILO[^ft:lilo]
+for Linux or `loader` for systems from the BSD family.
+
+[^ft:loadlin]: `loadlin` was a bootloader common in the early days of Linux,
+               when it was used to load the kernel from a DOS or pre-NT Windows
+               environment; see @wiki:loadlin article on `loadlin`.
+
+[^ft:lilo]: LILO was another Linux-only bootloader, used in many
+            distributions before GRUB came into popularity;
+            see @wiki:lilo article on `LILO`.
 
 The multitude of problems involved in implementing a bootloader for each
-combination of an operating system and hardware platform in use led
-@okuji2006multiboot to devise [the Multiboot Specification][ext:multiboot].
+combination of an operating system and hardware platform
+as well as high coupling of the bootloader to the operating system
+were the reasons which led @okuji2006multiboot to devise
+[the Multiboot Specification][ext:multiboot].
 The specification defines an interface between a universal bootloader and an
 operating system. One implementation of the specification is [GRUB][ext:grub] --
-the bootloader which came to existence thanks to the effort of [GNU][ext:gnu]
+the bootloader which came to existence thanks to the effort of FSF[^ft:fsf],
 and is one of the most widely used bootloaders in the FOSS
 (Free and Open Source Software) world.
-More on the specification and GRUB is available in
-[_\ref{xr:mb-grub}{.\ }The Multiboot Specification and GRUB_](#xr:mb-grub).
+Other motives behind the specification are:
+
+- the reduction of effort put into crafting bootloaders for disparate
+  hardware platforms (much of the code for advanced
+  features[^ft:pifeatures] will be platform independent),
+
+- simplifying the boot process from the point of view of the OS
+  programmer (who is not interested in the low level post-8086 cruft),
+
+- introducing a well defined interface between a bootloader and an
+  operating system (allowing the same bootloader to load different OSes).
 
 [ext:multiboot]: http://www.gnu.org/software/grub/manual/multiboot/multiboot.html
 [ext:grub]: http://www.gnu.org/software/grub/
-[ext:gnu]: https://www.gnu.org/
 
-This work elaborates on the following topics:
+[^ft:fsf]: Free Software Foundation (http://www.fsf.org/) is the entity
+           behind GNU, the userland part of the majority of Linux distributions.
+
+[^ft:pifeatures]: E.g. a graphical user interface implementation most probably
+                  will not require platform specific adjustments;
+                  same goes for booting over a network (with the exception
+                  of a network interface driver, of course).
+
+GNU Hurd[^ft:hurdmb], NetBSD[^ft:netbsdmb], NOVA[^ft:novamb] and Xen
+hypervisors, L4 family microkernels, and VMware ESXi are examples of kernels
+supporting the Multiboot specification.
+
+[^ft:hurdmb]: See @hurd-bootstrap.
+[^ft:netbsdmb]: See @vidal2007netbsd.
+[^ft:novamb]: See @steinberg2010nova.
+
+DragonFly BSD is an operating system based on FreeBSD,
+but with a number of different architectural and design decisions
+(scaling onto multi-core CPUs being one of them).
+GRUB is able to boot the system via _chain loading_,
+i.e. by loading the bootloader of DragonFly BSD.
+The same technique is used to make GRUB load a Microsoft Windows system.
+
+This work describes the implementation of the Multiboot specification
+in DragonFly BSD, so that chain loading it is no longer necessary.
+The implementation was performed for i386 architecture and a sketch
+of how to perform a similar implementation for x86-64 is also presented.
+The work also demonstrates changes necessary to make GRUB load the DragonFly BSD
+kernel, which are now part of official GRUB code.
+The following topics are elaborated on in the next sections:
 
 -   [_\ref{xr:booting-bsd}{.\ }Booting a BSD system_](#xr:booting-bsd)
     gives an approachable introduction to the boot process of a BSD-like
@@ -79,7 +118,6 @@ This work elaborates on the following topics:
     \text{(section \ref{xr:mb-grub})}
     which provide an abstraction over the hardware specifics an operating
     system programmer must overcome to bootstrap the system.
-
     This section shows how GRUB makes the boot process seem simpler than it
     really is.
 
@@ -87,6 +125,7 @@ This work elaborates on the following topics:
     provides a description of changes necessary to make the system conform
     to the version of the specification targeted at the 32bit Intel
     architecture.
+    This is the core part of this work.
 
     In fact, this section describes all the changes which were applied to
     the DragonFly BSD kernel in order to make it fully functional when booted
@@ -97,8 +136,6 @@ This work elaborates on the following topics:
 
     This also includes extending the GRUB bootloader
     by writing a module for recognizing a new partition table type.
-
-    This is the core part of this work.
 
 -   [_\ref{xr:dfly-x64}{.\ }Booting DragonFly BSD with GRUB on x86-64_](#xr:dfly-x64)
     covers why the same approach can't be taken on the x86-64 architecture
@@ -185,7 +222,8 @@ and the modules).
 
 ## Third stage: `loader`
 
-The `loader`, already running in the protected mode, is actually quite a
+The `loader` (also known as `dloader` in DragonFly BSD),
+already running in the protected mode, is actually quite a
 capable piece of software.
 It allows for choosing which kernel to boot, whether to
 load any extra modules, configuring the environment,
@@ -254,33 +292,22 @@ system and hardware platform.
 It will not boot Linux or any other operating system which significantly
 differs from FreeBSD.
 
-Such high coupling of the bootloader to the operating system was one of the
-reasons behind the Multiboot Specification.
-Other motives behind the specification are:
-
-- the reduction of effort put into crafting bootloaders for disparate
-  hardware platforms (much of the code for advanced
-  features[^ft:pifeatures] will be platform independent),
-
-- simplifying the boot process from the point of view of the OS
-  programmer (who is not interested in the low level post-8086 cruft),
-
-- introducing a well defined interface between a bootloader and an
-  operating system (allowing the same bootloader to load different OSes).
-
-[^ft:pifeatures]: E.g. a graphical user interface implementation most probably
-                  will not require platform specific adjustments;
-                  same goes for booting over a network (with the exception
-                  of a network interface driver, of course).
-
 The bootloader implementing the Multiboot Specification is GNU GRUB.
-Thanks to the modular architecture and clever design,
-GRUB is able to run on multiple hardware platforms,
+Apart from the points already mentioned
+in [_\ref{xr:intro}{.\ }Introduction_](#xr:intro), GRUB,
+thanks to the modular architecture and clever design,
+is able to run on multiple hardware platforms,
 support a range of devices, partition table schemes and file systems
 and load different operating systems.
-Is is also possible to use it as a Coreboot payload.
+It is also possible to use it as a Coreboot payload[^ft:coreboot-payload].
 GRUB also sports a modern graphical user interface for a seamless user
-experience from the boot to the desktop environment login screen.
+experience from as early as the boot menu to as far as the desktop environment
+login screen.
+
+[^ft:coreboot-payload]: Coreboot is a BIOS firmware replacement.
+                        Payloads are standalone ELF executables that
+                        Coreboot can use in order to support some desired
+                        functionality.
 
 The availability of GRUB is a major step towards simplification of the
 boot process from the OS programmer point of view.
