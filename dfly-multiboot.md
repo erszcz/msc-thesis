@@ -211,10 +211,10 @@ and a _flat memory model_[^ft:flatmem].
                may be viewed as one huge segment.
 
 One more thing `boot2` does before running `loader` is initializing
-the first few fields of the `struct bootinfo` structure which is passed
-to the `loader` and later to the kernel.
-This structure is the main interface between the BSD bootloader and
-the kernel and contains basic information about the kernel (its location),
+the first few fields of the `struct bootinfo` structure.
+The structure is passed to the `loader` and later to the kernel
+and is the main interface between the BSD bootloader and the kernel.
+It contains basic information about the kernel (its location),
 the hardware (disk geometry as detected by the BIOS), available memory,
 preloaded modules and the environment (variables configuring the kernel
 and the modules).
