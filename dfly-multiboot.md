@@ -363,7 +363,7 @@ Therefore, chain loading is unsatisfactory.
 
 One of the things a bootloader does is understanding the disk
 layout of the machine it is written for -- the partition table and file system
-the files of the operating system are stored on.
+on which the files of the operating system are stored.
 
 Traditionally, systems of the BSD family (among with Solaris back in the
 day called SunOS) used the `disklabel` partitioning layout.
