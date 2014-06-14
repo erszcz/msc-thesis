@@ -38,7 +38,7 @@ services for computer programs._
 In other words, an operating system is a computer program which allows
 other programs to run. What, then, allows the operating system to run if
 itself it cannot rely on an operating system?
-Especially, what does start the operating system?
+In particular, what starts the operating system?
 
 [ext:wiki-os]: http://en.wikipedia.org/wiki/Operating_system
 
@@ -61,13 +61,13 @@ the bootloader which came to existence thanks to the effort of [GNU][ext:gnu]
 and is one of the most widely used bootloaders in the FOSS
 (Free and Open Source Software) world.
 More on the specification and GRUB is available in
-[_\ref{xr:mb-grub}{\ }The Multiboot Specification and GRUB_](#xr:mb-grub) section.
+[_\ref{xr:mb-grub}{\ }The Multiboot Specification and GRUB_](#xr:mb-grub).
 
 [ext:multiboot]: http://www.gnu.org/software/grub/manual/multiboot/multiboot.html
 [ext:grub]: http://www.gnu.org/software/grub/
 [ext:gnu]: https://www.gnu.org/
 
-The main points of this work are:
+This work elaborates on the following topics:
 
 -   [_\ref{xr:booting-bsd}{\ }Booting a BSD system_](#xr:booting-bsd)
     gives an approachable introduction to the boot process of a BSD-like
