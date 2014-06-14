@@ -590,11 +590,11 @@ and involves the following steps:
 However, things get hairy when we get to the details.
 The foremost issue is compatibility with the existing booting strategy.
 In other words, all changes done to the kernel must be backwards
-compatible with `dloader` not to break the already existing boot path.
+compatible with `dloader`, so as not to break the already existing boot path.
 
-The following sections describe in detail how the listed steps were
-performed, taking the above consideration into account, for the `pc32`
-variant of DragonFly BSD kernel, i.e. for the Intel x86 platform.
+The following sections describe in detail how the steps listed above were
+implemented for the `pc32` variant of DragonFly BSD kernel,
+i.e. for the Intel x86 platform.
 
 
 ### How does GRUB identify the kernel image?
