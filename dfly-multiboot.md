@@ -251,10 +251,9 @@ After the basic register setup there are three operations it performs:
 `recover_bootinfo`, `identify_cpu`, `create_pagetables`.
 
 On the Intel x86 architecture the `identify_cpu` procedure is especially
-hairy as it must differentiate between all the possible CPUs in the line
-from 8086.
+hairy as it must differentiate between all the possible CPUs in the x86 line.
 The first processors did not support precise self-identification
-instructions so the identification is a trial and error process.
+instructions, so the identification is a trial and error process.
 Discriminating between versions of the same chip manufactured by different
 vendors is in fact done by checking for known vendor-specific defects
 in the chip.
