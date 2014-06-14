@@ -104,6 +104,9 @@ This work describes the implementation of the Multiboot specification
 in DragonFly BSD, so that chain loading it is no longer necessary.
 The implementation was performed for i386 architecture and a sketch
 of how to perform a similar implementation for x86-64 is also presented.
+Special care had to be taken to ensure compatibility with the existing
+booting strategy, i.e. all changes done to the kernel had to be backwards
+compatible with `dloader` not to break the already existing boot path.
 The work also demonstrates changes necessary to make GRUB load the DragonFly BSD
 kernel, which are now part of official GRUB code.
 The following topics are elaborated on in the next sections:
