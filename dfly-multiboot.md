@@ -67,7 +67,7 @@ More on the specification and GRUB is available in
 [ext:grub]: http://www.gnu.org/software/grub/
 [ext:gnu]: https://www.gnu.org/
 
-The main points of this paper are:
+The main points of this work are:
 
 -   [_\ref{xr:booting-bsd}{\ }Booting a BSD system_](#xr:booting-bsd)
     gives an approachable introduction to the boot process of a BSD-like
@@ -98,7 +98,7 @@ The main points of this paper are:
     This also includes extending the GRUB bootloader
     by writing a module for recognizing a new partition table type.
 
-    This is the core part of this paper.
+    This is the core part of this work.
 
 -   [_\ref{xr:dfly-x64}{\ }Booting DragonFly BSD with GRUB on x86-64_](#xr:dfly-x64)
     covers why the same approach can't be taken on the x86-64 architecture
@@ -288,7 +288,7 @@ boot process from the OS programmer point of view.
 
 # Booting DragonFly BSD with GRUB
 
-The focus of this paper is to describe all changes necessary
+The focus of this work is to describe all changes necessary
 to the DragonFly BSD kernel and the GRUB bootloader to make both
 interoperate as described in the Multiboot specification.
 In other words, all the changes necessary to make GRUB load and boot
@@ -388,7 +388,7 @@ utility program `disklabel64`.
 
 The module responsible for reading `disklabel64` this section refers
 to [is already included in GRUB][ext:grub-dfly].
-That is one of the main contributions of the project this paper is about.
+That is one of the main contributions of the project this work is about.
 
 [ext:grub-dfly]: http://git.savannah.gnu.org/cgit/grub.git/commit/?id=1e908b34a6c13ac04362a1c71799f2bf31908760
 
@@ -396,7 +396,7 @@ That is one of the main contributions of the project this paper is about.
 ### GRUB source code organization
 
 During this project, the revision control system of GNU GRUB changed from
-[Bazaar][ext:bzr] to [Git][ext:git]. As of writing this paper, the code
+[Bazaar][ext:bzr] to [Git][ext:git]. As of writing this work, the code
 is located at [http://git.savannah.gnu.org/grub.git][ext:grub-git].
 
 [ext:bzr]: http://bazaar.canonical.com/en/
