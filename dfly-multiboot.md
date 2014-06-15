@@ -960,7 +960,7 @@ It relies solely on the segment load addresses for loading an ELF kernel.
 Thanks to `dloader`'s ambivalence as to the values of these addresses,
 we can safely adjust them in any way required by GRUB.
 One thing to keep in mind, though, is not to introduce extra program
-headers, as that `dloader` won't be able to handle.
+headers, as `dloader` won't be able to handle it.
 
 The only thing required to adjust the load addresses is overriding the
 load address of the first output section in the linker script.
