@@ -1257,44 +1257,15 @@ but still maintains the proper relative order of their initialization.
 Subsystems loaded dynamically as kernel modules are also taken into account
 when determining the subsystem initialization order.
 
-Given the described initialization mechanism, the below listing presents
-how the code interpreting the command line passed by GRUB declares its
-requirements as to the moment of initialization:
+Given the above-described initialization mechanism, the following listing
+presents how the code interpreting the command line passed
+by GRUB[^ft:parse-cl] declares its required moment of initialization:
+
+[^ft:parse-cl]: See DragonFly BSD: `sys/platform/pc32/i386/autoconf.c:500`
 
 ```C
-// sys/platform/pc32/i386/autoconf.c:500
-#if defined(MULTIBOOT)
-
-#include <sys/libkern.h>
-
-extern char multiboot_cmdline[];
-
-static void
-multiboot_setup_kenv(void)
-{
-    char *key, *val;
-    char *p = multiboot_cmdline;
-
-    /* Did the bootloader pass a command line? */
-    if (*p == '\0')
-        return;
-
-    /* For each key=val pair in the command line set a kenv with
-     * the same key and val. */
-    while ((key = strsep(&p, " ")) != NULL) {
-        /* Skip extra spaces. */
-        if (*key == '\0')
-            continue;
-        val = key;
-        strsep(&val, "=");
-        if (val != NULL)
-            ksetenv(key, val);
-    }
-}
 SYSINIT(multiboot_setup_kenv, SI_SUB_ROOT_CONF, SI_ORDER_MIDDLE,
         multiboot_setup_kenv, NULL)
-
-#endif
 ```
 
 The `SYSINIT` macro is used to define the subsystem name
@@ -1306,7 +1277,7 @@ Please note that this initialization step must be done between
 
 At `SI_BOOT1_POST` the static kernel environment (inherited from the
 bootloader in case of `dloader`) is copied into the dynamic kernel
-environment accessible via a kernel API. Before this operation,
+environment, accessible via a kernel API. Before this operation,
 the dynamic kernel environment is not initialized yet and not
 accessible programmatically.
 
@@ -1321,8 +1292,8 @@ for each `key=val` entry on the command line.
 Malformed entries (i.e. not containing an equal sign `=`) are ignored.
 
 This way, given GRUB passes a valid value for `vfs.root.mountfrom`
-(e.g. `vfs.root.mountfrom=ufs:/dev/ad0s1a`) the code in `sys/kern/vfs_conf.c`
-responsible for mounting the root file system is aware of the device to be used
+(e.g. `vfs.root.mountfrom=ufs:/dev/ad0s1a`) the code responsible for mounting
+the root file system in `sys/kern/vfs_conf.c` is aware of the device to be used
 for that purpose.
 This makes the boot process using GRUB fully automatic and seamless from
 the GRUB prompt straight to the login shell.
