@@ -599,19 +599,15 @@ i.e. for the Intel x86 platform.
 
 ### How does GRUB identify the kernel image?
 
-The Multiboot specification [@okuji2006multiboot, section 3.1] states:
+The Multiboot specification [@okuji2006multiboot, section 3.1] states
+that besides the usual headers of the format used by an OS image,
+the image must contain a 32-bit aligned Multiboot header.
+This header must not exceed past 8KiB from the beginning of the image
+and generally should come as early as possible.
 
-> An OS image must contain an additional header called Multiboot header,
-> besides the headers of the format used by the OS image. The Multiboot
-> header must be contained completely within the first 8192 bytes of the OS
-> image, and must be longword (32-bit) aligned. In general, it should come
-> as early as possible, and may be embedded in the beginning of the text
-> segment after the real executable header.
-
-Except the above requirements,
+Except this requirement,
 there are really no constraints put onto the format of the kernel image file.
-Specifically, the requirements described above allow the kernel to be
-stored in ELF format,
+Specifically, the kernel may be stored in ELF format,
 which is a widely accepted standard for object file storage.
 However, ELF requires the ELF header to be placed at the immediate beginning
 of a file [see @tis1995elf, section 1-2].
