@@ -731,8 +731,8 @@ we can't build DragonFly BSD on DragonFly BSD,
 hence the need of supporting different architectures.
 
 Another reason is that by using the linker script it's possible to define
-symbols in the program namespace, whose values couldn't be determined
-in the code otherwise.
+symbols in the program namespace, whose values couldn't be otherwise
+determined in the code.
 Examples of such symbols are `edata` or `end` meaning, respectively,
 the end of the `.data` section and of the kernel binary.
 In a userspace program there's no (or little) use for such symbols,
@@ -775,7 +775,7 @@ index a0db817..1068ba5 100644
 
 On the contrary to what one might expect,
 this had the effect of placing the `.mbheader`
-input section in the `.data` output section which is placed _after_ the
+input section in the `.data` output section, which is placed _after_ the
 `.text` output section.
 That's definitely far from the initial 8KiB of the kernel binary.
 
