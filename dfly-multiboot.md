@@ -1462,30 +1462,6 @@ as well as the source code and its commentary
 of the Xv6 teaching operating system [@coxxv6] were also of considerable help.
 
 
-# Further Work
-
-Implementation of the GRUB and DragonFly BSD interoperability described
-herein was done for the x86 platform of DragonFly BSD.
-Based on the finding by @tigeot-on-stats that
-*80.15% of downloaded packages are for the amd64/x86_64 architecture*
-it was decided that the x86 platform will be dropped in near future, though
-the exact release when that will happen hasn't been decided yet.
-
-In this light, implementing the GRUB -- DragonFly BSD interoperability,
-either according to the scenario described in one of the previous sections
-or by extending Multiboot and GRUB to allow loading ELF64 kernels natively,
-is an open field for future work.
-
-The current implementation is only capable of loading the DragonFly BSD
-kernel from a UFS filesystem,
-but the hallmark feature of DragonFly BSD is the HAMMER filesystem.
-Enabling GRUB to read HAMMER and boot from a HAMMER volume would be
-a major step forward.
-HAMMER2 design is described by @dillon2011hammer2, while more written word
-on the initial version of the filesystem is available from @lorch2009porting
-and @oppegaard2009evaluation.
-
-
 # Related Work
 
 There is a number of projects revolving around the issue of bootstrapping.
@@ -1542,7 +1518,7 @@ The earliest version of the Multiboot Specification also predates the
 earliest version of UEFI (then known as Intel Boot Initiative) by 3 years.
 
 
-# Conclusions
+# Conclusions and Future Work
 
 The evolutionary development of processor architectures, requirement of
 maintaining backwards compatibility and design errors lead to a lot of
@@ -1556,6 +1532,27 @@ However, with clever software design it is possible to abstract away most
 of the boot time peculiarities and cruft from the OS while initiatives
 like the Multiboot Specification and UEFI provide a clean interface for
 new and existing OS implementations.
+
+Implementation of the GRUB and DragonFly BSD interoperability described
+herein was done for the x86 platform of DragonFly BSD.
+Based on the finding by @tigeot-on-stats that
+*80.15% of downloaded packages are for the amd64/x86_64 architecture*
+it was decided that the x86 platform will be dropped in near future, though
+the exact release when that will happen hasn't been decided yet.
+
+In this light, implementing the GRUB -- DragonFly BSD interoperability,
+either according to the scenario described in one of the previous sections
+or by extending Multiboot and GRUB to allow loading ELF64 kernels natively,
+is an open field for future work.
+
+The current implementation is only capable of loading the DragonFly BSD
+kernel from a UFS filesystem,
+but the hallmark feature of DragonFly BSD is the HAMMER filesystem.
+Enabling GRUB to read HAMMER and boot from a HAMMER volume would be
+a major step forward.
+HAMMER2 design is described by @dillon2011hammer2, while more written word
+on the initial version of the filesystem is available from @lorch2009porting
+and @oppegaard2009evaluation.
 
 
 <!--
