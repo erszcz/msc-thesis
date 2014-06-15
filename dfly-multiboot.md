@@ -984,6 +984,11 @@ The introduced change is presented below:
    .gnu.hash       : { *(.gnu.hash) }
 ```
 
+The `AT (<expression>)` keyword sets the load address of an output section.
+As already mentioned, following sections will be laid out linearly after
+this one, so their load addresses will be modified accordingly.
+The `ADDR (<section>)` keyword returns the virtual address of `<section>`.
+
 Inspecting a kernel built with the adjusted linker script shows that the
 segment load addresses are in fact offset from the virtual addresses
 by a value of `0xc0000000`, i.e. the `kernbase` location.
@@ -997,58 +1002,33 @@ There are 5 program headers, starting at offset 52
 
 Program Headers:
   Type    Offset   VirtAddr   PhysAddr   FileSiz MemSiz  Flg Align
-  PHDR    0x000034 0xc0100034 0x00100034 0x000a0 0x000a0 R   0x4
-  INTERP  0x0000d4 0xc01000d4 0x001000d4 0x00019 0x00019 R   0x4
+  PHDR    0x000034 \textcolor{blue}{0xc0100034} \textcolor{red}{0x00100034} 0x000a0 0x000a0 R   0x4
+  INTERP  0x0000d4 \textcolor{blue}{0xc01000d4} \textcolor{red}{0x001000d4} 0x00019 0x00019 R   0x4
       [Requesting program interpreter: /red/herring]
-  LOAD    0x000000 0xc0100000 0x00100000 0x310134 0x310134 R E 0x1000
-  LOAD    0x310134 0xc0411134 0x00411134 0x2b875 0x4662ac RW  0x1000
-  DYNAMIC 0x310134 0xc0411134 0x00411134 0x00068 0x00068 RW  0x4
+  LOAD    0x000000 \textcolor{blue}{0xc0100000} \textcolor{red}{0x00100000} 0x310134 0x310134 R E 0x1000
+  LOAD    0x310134 \textcolor{blue}{0xc0411134} \textcolor{red}{0x00411134} 0x2b875 0x4662ac RW  0x1000
+  DYNAMIC 0x310134 \textcolor{blue}{0xc0411134} \textcolor{red}{0x00411134} 0x00068 0x00068 RW  0x4
 ...
 ```
 
-At last, it is worth noting how GRUB treats the entry address present in
+Also, it is worth noting how GRUB treats the entry address present in
 the ELF headers of the kernel image:
 
 ```
 $ readelf -h /boot/kernel/kernel
 ELF Header:
-  Magic:   7f 45 4c 46 01 01 01 00 00 00 00 00 00 00 00 00
-  Class:                             ELF32
-  Data:                              2's complement, little endian
-  Version:                           1 (current)
-  OS/ABI:                            UNIX - System V
-  ABI Version:                       0
-  Type:                              EXEC (Executable file)
-  Machine:                           Intel 80386
-  Version:                           0x1
+  ...
   Entry point address:               0xc013b040
-  Start of program headers:          52 (bytes into file)
-  Start of section headers:          21377500 (bytes into file)
-  Flags:                             0x0
-  Size of this header:               52 (bytes)
-  Size of program headers:           32 (bytes)
-  Number of program headers:         5
-  Size of section headers:           40 (bytes)
-  Number of section headers:         34
-  Section header string table index: 31
+  ...
 ```
 
-As seen above, the entry point (`0xc013b040`) is specified as a virtual
-address positioned high in the memory.
+As can be seen above, the entry point (`0xc013b040`) is specified
+as a virtual address positioned high in the memory.
 Fortunately, GRUB is capable of adjusting this value by the difference
 between the virtual and physical addresses of the segment the entry point
-is contained in (i.e. by `kernbase`) as seen in the code below:
+is contained in (i.e. by `kernbase`)[^ft:entry-fix].
 
-```C
-// grub-core/loader/multiboot_elfxx.c:131
-if (phdr(i)->p_vaddr <= ehdr->e_entry
-    && phdr(i)->p_vaddr + phdr(i)->p_memsz > ehdr->e_entry)
-  {
-    grub_multiboot_payload_eip = (ehdr->e_entry - phdr(i)->p_vaddr)
-      + phdr(i)->p_paddr;
-    ...
-  }
-```
+[^ft:entry-fix]: See GRUB: `grub-core/loader/multiboot_elfxx.c:131`
 
 This is sufficient for GRUB to be able to properly load the kernel image
 and jump to the entry point address.
