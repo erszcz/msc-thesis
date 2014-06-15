@@ -1306,15 +1306,9 @@ GRUB is more complicated.
 The Multiboot Specification only defines an interface for loading 32 bit
 operating systems. This is due to two reasons.
 
-Firstly, when the specification was defined in 1995, the x86-64 was still
+First, when the specification was defined in 1995, the x86-64 was still
 to be unknown for the next 5 years.[^ft:amd64]
-
-[^ft:amd64]: According to Wikipedia: [AMD64][ext:wiki-amd64] was _announced
-             in 1999 with a full specification in August 2000_.
-
-[ext:wiki-amd64]: http://en.wikipedia.org/wiki/X86-64#History_of_AMD64
-
-Secondly, the AMD64 (the standard describing the x86-64 instruction set)
+Second, the AMD64 (the standard describing the x86-64 instruction set)
 requires the entry to the long mode be preceded
 by enabling paging and setting a logical to physical address mapping.
 Choosing any scheme for this mapping limits the freedom with respect
@@ -1325,8 +1319,14 @@ The kernel programmer would have two choices: either leave the mapping as
 is or write some custom code to reinitialize the page table hierarchy
 upon entry into the kernel.
 The former is limiting.
-The latter is feasible as the kernel manipulates the memory management
-settings as part of usual process context switching either way.
+The latter is feasible: after all, the kernel manipulates the memory
+management settings as part of usual process context switching.
+
+[^ft:amd64]: According to Wikipedia: [AMD64][ext:wiki-amd64] was _announced
+             in 1999 with a full specification in August 2000_.
+
+[ext:wiki-amd64]: http://en.wikipedia.org/wiki/X86-64#History_of_AMD64
+
 
 An alternative approach, however, would be to allow the processor to enter
 _real long mode_ in which the addresses would be 64 bit wide and physical.
@@ -1337,7 +1337,7 @@ from the ground up in the most sensible way.
 This approach would also require the kernel to use the relocation macro
 technique (see the `R` macro description in section
 [_\ref{xr:entry-point}{.\ }Adjusting the kernel entry point_](#xr:entry-point))
-to make the code linked for high logical addresses to function properly
+in order to make the code linked for high logical addresses function properly
 before setting up the page table hierarchy and relocating.
 
 Since GRUB doesn't enter long mode and can't make use of 64 bit addressing,
