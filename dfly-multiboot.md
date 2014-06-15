@@ -878,14 +878,14 @@ All of that must be done in a way which maintains bootability by `dloader`.
 
 The kernel, once booted by GRUB, instead of expecting
 the `struct bootinfo` structure must be able to interpret the structure
-passed from GRUB which the Multiboot specification describes in detail.
+passed from GRUB, which the Multiboot specification describes in detail.
 This is required at least for setting the root filesystem,
 but adjusting the kernel environment may be used for multiple other purposes.
 
 No matter what bootloader booted the kernel,
 the entry will happen at the same address.
-However, just after that the code must branch taking the points
-stated above into account.
+However, just after entry from the bootloader the code must branch taking
+the points stated above into account.
 The branching should converge before calling the
 platform dependent `init386` initialization procedure.
 The rest of the system should not need to be aware of what bootloader
@@ -918,12 +918,12 @@ Program Headers:
 ...
 ```
 
-The `-l` flag tells `readelf` to list just the program headers (a.k.a segments).
+The `-l` flag tells `readelf` to list just the program headers (a.k.a. segments).
 
-`dloader` can load such a kernel just fine thanks to its algorithm
-for reading ELF images.
-Firstly, it ignores the physical addresses embedded in the ELF image.
-Secondly, it calculates the load address based on the entry address
+`dloader` can load such a kernel just fine,
+thanks to its algorithm for reading ELF images.
+First, it ignores the physical addresses embedded in the ELF image.
+Second, it calculates the load address based on the entry address
 stored in the image.
 
 The entry address is read from the ELF header:
