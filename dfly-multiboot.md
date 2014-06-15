@@ -795,29 +795,35 @@ The constant offset was equal to the value of symbol `kernbase`,
 which specifies a page aligned base address at which the kernel is loaded.
 
 This led to an attempt at forcing the position in the output binary
-by modifying the load address of the whole `text` output segment.
+by modifying the load address of the whole `text` output segment through
+adjusting it in the `PHDRS` section of the linker script.
 This segment contained all consecutive sections up to the `.data`
 section, i.e. `.interp`, sections with relocation and symbol information
 and finally the `.text` section.
+An arbitrary address close to the beginning of the file was picked,
+but to no avail.
+As it became obvious later (when figuring out how to make GRUB understand
+what address to load the kernel at) this couldn't have worked.
 
+Another, still unsuccessful, approach was putting the `.mbheader` section into
+the `headers` output segment.
 Introducing a completely new program header (a.k.a. segment) was also
 tried with no success.
-This is probably explained by the message of commit e19c755
-from the DragonFly BSD repository:
-
-> The gold linker changed its ELF program header handling defaults for
-> version 2.22, and this resulted in an extra LOAD segment reserved only
-> for the program headers.  The DragonFly loader wasn't expecting that
-> and instantly rebooted when trying to load a gold kernel.
-
-From this message we can infer that `dloader` expects a kernel with
-exactly 2 loadable program segments.
+This is probably explained by the message of commit e19c755[^ft:goldlinker]
+from the DragonFly BSD repository from which we can infer that `dloader`
+expects a kernel with exactly 2 loadable program segments.
 An image with more can be generated easily,
 but it won't be bootable by `dloader`.
 
+[^ft:goldlinker]: The verbatim message is:
+                  _The gold linker changed its ELF program header handling
+                  defaults for version 2.22, and this resulted in an extra LOAD
+                  segment reserved only for the program headers.
+                  The DragonFly loader wasn't expecting that and instantly
+                  rebooted when trying to load a gold kernel._
+
 Finally, the trial and error process led to inserting the `.mbheader`
 section at the end of the `.interp` section.
-
 Section `.interp` contains a path to the program interpreter,
 i.e. a program which is run in place of the loaded binary and prepares
 it for execution[^ft:ldd].
@@ -854,7 +860,7 @@ index dc1242e..24081c9 100644
            program needs to run successfully and relies on shared libraries
            commonly available on the target system.
            In case of userspace programs, the interpreter handles symbol
-           relocations and lazy loads those dynamically linked shared libraries
+           relocations and lazy loads these dynamically linked shared libraries
            finalizing the linking of the program during its execution.
 
 This approach hasn't caused any issues with the resulting binaries so far,
