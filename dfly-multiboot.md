@@ -555,8 +555,8 @@ counted from 0 while partitions from 1),
 while the first DragonFly BSD subpartition of that MS-DOS
 partition as `(hd0,msdos2,dfly1)`.
 
-In this light, it should be clearer how the GRUB is partition recognition
-loop (mentioned above) works.
+In this light, it should be clearer how the partition recognition
+loop of GRUB (mentioned above) works.
 First, each partition type callback (e.g. `dfly_partition_map_iterate`,
 `grub_partition_msdos_iterate`, ...) is run on the raw device
 to find a partition table.
