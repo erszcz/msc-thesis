@@ -1234,81 +1234,24 @@ Below is a glimpse of the priority setting definitions:
  * Enumerated types for known system startup interfaces.
  *
  * Startup occurs in ascending numeric order; the list entries are
- * sorted prior to attempting startup to guarantee order.  Items
- * of the same level are arbitrated for order based on the 'order'
- * element.
- *
- * These numbers are arbitrary and are chosen ONLY for ordering; the
- * enumeration values are explicit rather than implicit to provide
- * for binary compatibility with inserted elements.
- *
- * The SI_SUB_RUN_SCHEDULER value must have the highest lexical value.
+ * sorted prior to attempting startup to guarantee order.
+ * ...
  */
 enum sysinit_sub_id {
-    /*
-     * Special cased
-     */
-    SI_SPECIAL_DUMMY    = 0x0000000,    /* not executed; for linker*/
-    SI_SPECIAL_DONE     = 0x0000001,    /* flag sysinit completion */
-
-    /*
-     * Memory management subsystems.
-     */
-    SI_BOOT1_TUNABLES   = 0x0700000,    /* establish tunable values */
-    SI_BOOT1_COPYRIGHT  = 0x0800000,    /* first use of console*/
-    SI_BOOT1_LOCK       = 0x0900000,    /* lockmgr locks and tokens */
-    SI_BOOT1_VM         = 0x1000000,    /* virtual memory system init*/
-    SI_BOOT1_ALLOCATOR  = 0x1400000,    /* slab allocator */
-    SI_BOOT1_KMALLOC    = 0x1600000,    /* kmalloc inits */
+    ...
     SI_BOOT1_POST       = 0x1800000,    /* post boot1 inits */
-
-    /*
-     * Fickle ordering.  objcache and softclock need to know what
-     * ncpus is to initialize properly, clocks (e.g. hardclock)
-     * need softclock to work, and we can't finish initializing
-     * the APs until the system clock has been initialized.
-     * Also, clock registration and smp configuration registration
-     * must occur before SMP.  Messy messy.
-     */
-    SI_BOOT2_LEAVE_CRIT  = 0x1900000,
-    SI_BOOT2_PRESMP      = 0x1a00000,    /* register SMP configs */
-    SI_BOOT2_START_CPU   = 0x1a40000,    /* start CPU (BSP) */
     ...
-
-    /*
-     * Finish up core kernel initialization and set up the process
-     * abstraction.
-     */
-    SI_BOOT2_BIOS        = 0x1d00000,
+    SI_SUB_ROOT_CONF    = 0xb000000,    /* Find root devices */
     ...
-
-    /*
-     * Continue with miscellanious system initialization
-     */
-    SI_SUB_CREATE_INIT   = 0x2300000,    /* create the init process */
-    ...
-
-    /*
-     * Root filesystem setup, finish up with the major system
-     * demons.
-     */
-    SI_SUB_ROOT_CONF     = 0xb000000,    /* Find root devices */
-    ...
-    SI_SUB_MOUNT_ROOT    = 0xb400000,    /* root mount*/
-    ...
-    SI_SUB_KTHREAD_INIT  = 0xe000000,    /* init process*/
-    ...
-    SI_SUB_RUN_SCHEDULER = 0xfffffff     /* scheduler: no return*/
 };
 ```
 
 As seen in the example listing above, the priorities are defined in wide
 intervals in order to leave room for introducing new subsystems in between
 the existing ones.
-
 Kernel subsystems, defined in multiple files around the source code tree,
 define the points at which they expect to be initialized.
-Using a declaration instead of of direct control flow passing from one
+Using a declaration instead of direct control flow passing from one
 subsystem to the next guarantees loose coupling between the components,
 but still maintains the proper relative order of their initialization.
 Subsystems loaded dynamically as kernel modules are also taken into account
