@@ -102,7 +102,7 @@ The same technique is used to make GRUB load a Microsoft Windows system.
 
 This work describes the implementation of the Multiboot specification
 in DragonFly BSD, so that chain loading it is no longer necessary.
-The implementation was performed for i386 architecture and a sketch
+The implementation was performed for x86 architecture and a sketch
 of how to perform a similar implementation for x86-64 is also presented.
 Special care had to be taken to ensure compatibility with the existing
 booting strategy, i.e. all changes done to the kernel had to be backwards
