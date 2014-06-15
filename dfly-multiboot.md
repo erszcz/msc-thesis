@@ -627,7 +627,7 @@ that the kernel uses the AT&T assembler syntax[^ft:att].
 [^ft:att]: @ritchie1974unix developed UNIX when working
            at AT&T Bell Laboratories.
 
-The low level architecture dependent parts of the kernel are to be found
+The low level architecture dependent parts of the kernel are
 in `sys/platform/pc32` and `sys/platform/pc64` subdirectories
 of the system source tree.
 
