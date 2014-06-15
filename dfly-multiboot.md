@@ -671,7 +671,7 @@ multiboot_header:
     .long   -(MULTIBOOT_HEADER_MAGIC + MULTIBOOT_HEADER_FLAGS)
 ```
 
-The header itself consists of 3 fields each 4 bytes wide:
+The header itself consists of 3 fields, each 4 bytes wide:
 
 - the Multiboot header magic number: 0x1BADB002,
 - flags which state what the kernel expects from the bootloader,
