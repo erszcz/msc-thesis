@@ -751,10 +751,13 @@ Examples of such symbols are `edata` or `end` meaning, respectively,
 the end of the `.data` section and of the kernel binary.
 In a userspace program there's no (or little) use for such symbols,
 but the kernel uses them for calculating the offset and size
-of the `.bss` section which the it must initialize itself.
+of the `.bss`[^ft:bss] section which the it must initialize itself.
 
-
-### Modifying the linker script
+[^ft:bss]: `.bss` is a traditional name of a section in the object file
+            containing uninitialized data; since this data has no
+            explicit value, there's no point in assigning storage space
+            for this section in an object file.
+            The name stands for _block started by symbol_.
 
 The language accepted by `ld` has constructs for setting symbol/section
 virtual addresses, overriding their linear (or load) addresses,
