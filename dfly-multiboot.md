@@ -1524,10 +1524,6 @@ The evolutionary development of processor architectures, requirement of
 maintaining backwards compatibility and design errors lead to a lot of
 complications for the operating system developers.
 
-Even the newest architecture designs are not free of flaws such as the
-x86-64 CPU's requirement of enabling virtual memory addressing before
-entering the long mode.
-
 However, with clever software design it is possible to abstract away most
 of the boot time peculiarities and cruft from the OS while initiatives
 like the Multiboot Specification and UEFI provide a clean interface for
