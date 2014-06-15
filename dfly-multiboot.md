@@ -616,9 +616,6 @@ If not for the aforementioned flexibility of Multiboot,
 this ELF requirement would lead to a serious problem for booting DragonFly
 BSD with GRUB, because of the kernel being natively stored as an ELF file.
 
-
-### Embedding the Multiboot header
-
 The most natural way of embedding the Multiboot header into the kernel
 is defining it in the assembly language.
 Given the heritage of DragonFly BSD it should not make one wonder
