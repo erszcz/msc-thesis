@@ -1185,16 +1185,16 @@ Except for that, the system turned out to be fully functional.
 ### Mounting the root file system
 
 `dloader` is capable of preparing the kernel environment before booting
-the kernel. In fact, it's got a Forth interpreter built in what makes
-it capable of performing some complicated tasks.
+the kernel. In fact, it's got a Forth interpreter built in,
+what makes it capable of performing some complicated tasks.
 Most of the time, though, `dloader` is simply used for parameterizing
 the functioning of some kernel subsystem, device driver or network stack.
 Setup of the kernel might also involve basic things like choosing the root
 device.
 However, the kernel environment
-is essentially just a simple key-value storage space where keys and
-values are zero-terminated strings whose meaning is left for interpretation
-to particular kernel subsystems.
+is essentially just a simple key-value storage space,
+where keys and values are zero-terminated strings whose meaning is left for
+interpretation to particular kernel subsystems.
 
 GRUB is neither aware nor capable of adjusting this kind of BSD specific
 kernel environment. However, the Multiboot specification defines that the
@@ -1206,21 +1206,21 @@ formatted according to the below scheme:
 kernel key1=val1 key2=val2 ...
 ```
 
-However, interpreting such a command line requires some logic in the
+Interpreting such a command line, however, requires some logic in the
 kernel aware of the convention. The logic could populate the kernel
-environment just as would `dloader` do.
+environment just as `dloader` would do.
 
 This code, though still coupled to the particulars of the bootloader
 which booted the kernel, is definitely out of scope of `locore.s`.
-Moreover, it would be unwise to write it in assembly if C is easily
-available just a little later in the boot process.
+Moreover, it would be unwise to write it in assembly,
+when C is easily available just a little later in the boot process.
 
 As described in the previous section, the contents of the command line
 passed by GRUB are stored safely into kernel memory in `locore.s`.
 However, the command line contents aren't interpreted until later in the
 boot process. Choosing the exact moment is a bit tricky. On the one hand,
 the support mechanism of the dynamic kernel environment must be setup already,
-on the other hand, the interpretation must be performed as early as possible
+on the other hand, the interpretation must be performed as early as possible,
 since other initializing subsystems might depend on the information passed
 on the command line.
 
@@ -1306,8 +1306,8 @@ As seen in the example listing above, the priorities are defined in wide
 intervals in order to leave room for introducing new subsystems in between
 the existing ones.
 
-Kernel subsystems defined in multiple files around the source code tree
-define the point at which they expect to be initialized.
+Kernel subsystems, defined in multiple files around the source code tree,
+define the points at which they expect to be initialized.
 Using a declaration instead of of direct control flow passing from one
 subsystem to the next guarantees loose coupling between the components,
 but still maintains the proper relative order of their initialization.
