@@ -633,8 +633,8 @@ of the system source tree.
 
 `sys/platform/pc32/i386/locore.s` is an assembly file defining the entry point
 to the x86 kernel.
-It's format may seem a bit strange at first sight since it's the AT&T
-syntax assembly mixed with C preprocessor directives.
+It's format may seem a bit strange at first,
+since it's the AT&T syntax assembly mixed with C preprocessor directives.
 Deciphering some definitions and rules from `sys/conf/kern.pre.mk` leads
 to the general command the file is processed with:
 
@@ -644,9 +644,8 @@ gcc -x assembler-with-cpp -c sys/platform/pc32/i386/locore.s
 
 The command handles generating an object file from such a C preprocessed
 assembly file.
-Thanks to such a setup, the Multiboot header definition can use
-meaningfully named macros instead of obscure numbers defined by the
-specification:
+Thanks to this setup, the Multiboot header definition can use meaningfully
+named macros instead of obscure numbers defined by the specification:
 
 ```gnuassembler
 /*
