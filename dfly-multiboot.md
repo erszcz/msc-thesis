@@ -926,64 +926,29 @@ First, it ignores the physical addresses embedded in the ELF image.
 Second, it calculates the load address based on the entry address
 stored in the image.
 
-The entry address is read from the ELF header:
-
-```C
-// sys/boot/common/load_elf.c:174
-/*
-* Calculate destination address based on kernel entrypoint
-*/
-dest = ehdr->e_entry;
-```
-
-The entry address is passed to an architecture word
-size aware function that will read the ELF image.
-For ELF32 the macro call `__elfN(loadimage)` expands
-to `elf32_loadimage(fp, &ef, dest)`.
-
-```C
-// sys/boot/common/load_elf.c:233
-__elfN(loadimage)(fp, &ef, dest);
-```
-
-The following is the commented signature of `elf32_loadimage()`.
-Note that variable `dest` is known as `off` inside the function.
-
-```C
-// sys/boot/common/load_elf.c:258
-/*
- * With the file (fd) open on the image, and (ehdr) containing
- * the Elf header, load the image at (off)
- */
-static int
-__elfN(loadimage)(struct preloaded_file *fp,
-                  elf_file_t ef,
-                  u_int64_t off);
-```
-
-Below, the load address is adjusted depending on the architecture.
-For ELF32 and the initial entry address equal to `0xc016c450`
-this calculation evaluates to `0xffffffff40000000.`
+The entry address is read from the ELF header[^ft:ehdr-entry] and then
+passed to an architecture word size aware function that will read the ELF image.
+The signature of this function is automatically generated using
+the `__elfN(loadimage)`[^ft:elfn-macro] macro,
+so that the same definition, written with appropriate care,
+can be reused for both ELF32 and ELF64 formats.
+For ELF32 a call to this function expands to `elf32_loadimage(fp, &ef, dest)`
+[^ft:call-elf32].
+The load address is adjusted depending on the architecture[^ft:adjust-elf32].
+For ELF32 and an initial entry address equal to `0xc016c450`
+calculation of the offset evaluates to `0xffffffff40000000.`
 An example program header virtual address of `0xc0100000`
 offset by `0xffffffff40000000` gives `0x100000`, i.e. 1MiB -- a convenient
 low physical address to load the kernel at.
 
-```C
-// sys/boot/common/load_elf.c:289
-if (ef->kernel) {
-#ifdef __i386__
-#if __ELF_WORD_SIZE == 64
-    /* x86_64 relocates after locore */
-    off = - (off & 0xffffffffff000000ull);
-#else
-    /* i386 relocates after locore */
-    off = - (off & 0xff000000u);
-#endif
-```
-
-The insight flowing from this analysis is that the load addresses the
-kernel is linked with aren't important from `dloader`'s perspective.
+The insight from the above analysis is that the load addresses the
+kernel is linked with aren't important from the perspective of `dloader`.
 They can be freely adjusted in any way that is convenient.
+
+[^ft:ehdr-entry]: See DragonFly BSD: `sys/boot/common/load_elf.c:174`
+[^ft:elfn-macro]: See DragonFly BSD: `sys/boot/common/load_elf.c:258`
+[^ft:call-elf32]: See DragonFly BSD: `sys/boot/common/load_elf.c:233`
+[^ft:adjust-elf32]: See DragonFly BSD: `sys/boot/common/load_elf.c:289`
 
 
 ### Loading the image: GRUB
