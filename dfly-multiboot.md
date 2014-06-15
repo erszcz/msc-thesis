@@ -695,31 +695,20 @@ computing history, the process of composing programs from reusable parts
 in its rawest form, or _linking_, is probably as old as computing itself.
 
 What is the responsibility of a linker?
-@linkers1999 in _Linkers & Loaders_ gives a succinct answer to that question:
+@linkers1999 in _Linkers & Loaders_ gives an answer that
+a linker assigns numeric locations to symbols, determines the sizes
+and location of the segments in the output address space, and, what is crucial
+in our case, figures out where everything goes in the output file.
+@chamberlain-taylor2003 in _Using ld, the GNU linker_ point at a different
+aspect -- that a linker maps sections of the input files into the output
+file and that most linker scripts do nothing more than this.
+The same authors also inform that GNU `ld` accepts Linker Command Language
+files written in a superset of AT&T’s Link Editor Command Language syntax,
+which ought to provide explicit and total control over the linking process.
 
-> [A] linker assigns numeric locations to symbols,
-> determines the sizes and location of the segments in the output address space,
-> and figures out where everything goes in the output file.
-
-The last part of this sentence is crucial.
-
-@chamberlain-taylor2003 in _Using ld, the GNU linker_ specify:
-
-> The main purpose of the linker script is to describe how the sections
-> in the input files should be mapped into the output file, and to control
-> the memory layout of the output file.
-> Most linker scripts do nothing more than this.
-
-Again @chamberlain-taylor2003 also inform what language GNU `ld` accepts:
-
-> `ld` accepts Linker Command Language files written in a superset
-> of AT&T’s Link Editor Command Language syntax,
-> to provide explicit and total control over the linking process.
-
-In the light of the above, especially the _total control over the linking
-process_ which decides _where everything goes in the output file_,
-one might think that making the linker place the Multiboot header
-at the beginning of the output file is a simple matter.
+In the light of this _total control_ which decides _where everything goes
+in the output file_, one might think that making the linker place the Multiboot
+header at the beginning of the output file is a simple matter.
 The experience gained from this project is exactly the opposite.
 
 The behaviour of GNU `ld`, the linker used by DragonFly BSD,
