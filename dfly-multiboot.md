@@ -226,7 +226,7 @@ and the modules).
 
 ## Third stage: `loader`
 
-The `loader` (also known as `dloader` in DragonFly BSD),
+The `loader` (known as `dloader` in DragonFly BSD),
 already running in the protected mode, is actually quite a
 capable piece of software.
 It allows for choosing which kernel to boot, whether to
