@@ -686,7 +686,7 @@ This is necessary, but not enough, to comply with the requirement of placing
 it in the first 8KiB of the kernel image.
 
 
-### What is a linker script?
+### Modifying the linker script
 
 Executable and Linking Format Specification [@tis1995elf] describes the
 format of an object file -- e.g. the DragonFly BSD kernel executable.
