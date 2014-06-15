@@ -50,7 +50,7 @@ for Linux or `loader` for systems from the BSD family.
 
 [^ft:lilo]: LILO was another Linux-only bootloader, used in many
             distributions before GRUB came into popularity;
-            see @wiki:lilo article on `LILO`.
+            see @wiki:lilo article on LILO.
 
 The multitude of problems involved in implementing a bootloader for each
 combination of an operating system and hardware platform
