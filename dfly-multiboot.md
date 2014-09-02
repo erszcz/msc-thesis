@@ -156,6 +156,8 @@ The following topics are elaborated on in the next sections:
                    [http://git.savannah.gnu.org/cgit/grub.git/commit/?id=1e908b34a6c13ac04362a1c71799f2bf31908760](http://git.savannah.gnu.org/cgit/grub.git/commit/?id=1e908b34a6c13ac04362a1c71799f2bf31908760)
 
 
+\newpage
+
 # Booting a BSD system {#xr:booting-bsd}
 
 The contents of this section are heavily (though not entirely)
@@ -293,6 +295,8 @@ The kernel does the platform dependent setup and calls `mi_startup`
 (the machine independent startup).
 
 
+\newpage
+
 # The Multiboot Specification and GRUB {#xr:mb-grub}
 
 The boot procedure and software described in section \ref{xr:booting-bsd}
@@ -369,6 +373,8 @@ Neither the seamless graphical transition from power-on to useful desktop
 is achievable when relying on chain loading.
 Therefore, chain loading is unsatisfactory.
 
+
+\newpage
 
 # Booting DragonFly BSD with GRUB {#xr:booting-with-grub}
 
@@ -1315,6 +1321,8 @@ This makes the boot process using GRUB fully automatic and seamless from
 the GRUB prompt straight to the login shell.
 
 
+\newpage
+
 # Booting DragonFly BSD with GRUB on x86-64 {#xr:dfly-x64}
 
 In case of the x86-64 architecture the problem of loading the kernel by
@@ -1410,6 +1418,8 @@ but due to the involved complexity and limited amount of time
 was not successful. This path is open for pursuing in the future.
 
 
+\newpage
+
 # Tools of Kernel Developer's Trade
 
 <!--
@@ -1478,6 +1488,8 @@ as well as the source code and its commentary
 of the Xv6 teaching operating system [@coxxv6] were also of considerable help.
 
 
+\newpage
+
 # Related Work
 
 There is a number of projects revolving around the issue of bootstrapping.
@@ -1533,6 +1545,8 @@ beginning.
 The earliest version of the Multiboot Specification also predates the
 earliest version of UEFI (then known as Intel Boot Initiative) by 3 years.
 
+
+\newpage
 
 # Conclusions and Future Work
 
@@ -1603,5 +1617,7 @@ and @oppegaard2009evaluation.
 
 -->
 
+
+\newpage
 
 # References
