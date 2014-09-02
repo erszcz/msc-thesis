@@ -326,19 +326,16 @@ The availability of GRUB is a major step towards simplification of the
 boot process from the OS programmer point of view.
 
 
-# Booting DragonFly BSD with GRUB
+## State of the Art
 
 The focus of this work is to describe all changes necessary
-to the DragonFly BSD kernel and the GRUB bootloader to make both
+to make both the DragonFly BSD kernel and the GRUB bootloader
 interoperate as described in the Multiboot specification.
-In other words, all the changes necessary to make GRUB load and boot
+In other words, all the changes needed to make GRUB load and boot
 DragonFly BSD using the Multiboot protocol.
 This might lead to the question --
 can GRUB boot DragonFly BSD using any other protocol?
 It turns out that it can.
-
-
-## State of the Art
 
 Besides loading and booting operating system kernels,
 GRUB is capable of so called _chain loading_[^ft:chainloading].
