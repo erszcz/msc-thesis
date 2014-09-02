@@ -295,25 +295,25 @@ The kernel does the platform dependent setup and calls `mi_startup`
 
 # The Multiboot Specification and GRUB {#xr:mb-grub}
 
-The described boot procedure and software is battle proven and works well
-for FreeBSD as well as, with minor changes, DragonFly BSD.
+The boot procedure and software described in section \ref{xr:booting-bsd}
+is battle proven, works well for FreeBSD and, with minor changes, DragonFly BSD.
 However, no matter how fantastic software the BSD bootloader is there is
 one problem with it -- it is **the BSD** bootloader.
 
 In other words, the bootloader is crafted towards a particular operating
 system and hardware platform.
-It will not boot Linux or any other operating system which significantly
-differs from FreeBSD.
+It will not boot Linux or, for that matter, any other operating system which
+significantly differs from FreeBSD.
 
 The bootloader implementing the Multiboot Specification is GNU GRUB.
-Apart from the points already mentioned
-in [_\ref{xr:intro}{.\ }Introduction_](#xr:intro), GRUB,
-thanks to the modular architecture and clever design,
+Apart from the points already mentioned in section
+[_\ref{xr:intro}{.\ }Introduction_](#xr:intro),
+GRUB, thanks to the modular architecture and clever design,
 is able to run on multiple hardware platforms,
 support a range of devices, partition table schemes and file systems
-and load different operating systems.
+and load a number of operating systems.
 It is also possible to use it as a Coreboot payload[^ft:coreboot-payload].
-GRUB also sports a modern graphical user interface for a seamless user
+GRUB also sports a modern graphical user interface, for a seamless user
 experience from as early as the boot menu to as far as the desktop environment
 login screen.
 
