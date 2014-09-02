@@ -410,8 +410,8 @@ TODO: there could be an appendix on BSD partitioning-related parlance:
 
 GRUB is extensible with regard to the partition tables and file systems
 it is able to understand.
-Although the variants of `disklabel` used by disparate BSD flavours differ,
-all of them have already been supported by GRUB before this project was started.
+Although variants of `disklabel` used by existing BSD flavours differ,
+all of them had already been supported by GRUB before this project was started.
 Unfortunately, that wasn't the case for DragonFly BSD's `disklabel64`.
 It is very important, because one piece of the puzzle is booting the
 kernel but another one is finding and loading it from the disk.
@@ -1410,7 +1410,7 @@ but due to the involved complexity and limited amount of time
 was not successful. This path is open for pursuing in the future.
 
 
-# Tools of a Kernel Developer's Trade
+# Tools of Kernel Developer's Trade
 
 <!--
 TODO: insert references to books/articles on the tools used
