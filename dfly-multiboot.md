@@ -1,6 +1,6 @@
 ---
 papersize: a4paper
-classoption: oneside
+classoption: twoside
 linkcolor: black
 documentclass: scrartcl
 ---
