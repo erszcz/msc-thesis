@@ -128,15 +128,15 @@ The following topics are elaborated on in the next sections:
     This section shows how GRUB makes the boot process seem simpler than
     it really is.
 
--   Section [_\ref{xr:dfly-x86}{.\ }Booting DragonFly BSD with GRUB on x86_](#xr:dfly-x86)
+-   [_\ref{xr:booting-with-grub}{.\ }Booting DragonFly BSD with GRUB_](#xr:booting-with-grub)
     provides a description of changes necessary to make the system conform
-    to the version of the specification targeted at the 32bit Intel
-    architecture.
+    to the Multiboot specification.
     This is the core part of this work.
 
     In fact, this section describes all the changes which were applied to
     the DragonFly BSD kernel in order to make it fully functional when booted
-    by GRUB. These changes include, but are not limited to, adjusting the
+    by GRUB on the 32bit Intel architecture.
+    These changes include, but are not limited to, adjusting the
     kernel linker script, modifying the existing entry point written in
     assembly language and finally enabling the system to interpret boot
     information passed by GRUB in order to mount the root file system.
@@ -370,14 +370,13 @@ is achievable when relying on chain loading.
 Therefore, chain loading is unsatisfactory.
 
 
-# Booting DragonFly BSD with GRUB
+# Booting DragonFly BSD with GRUB {#xr:booting-with-grub}
 
 In this section I will describe what was necessary to make GRUB understand
-`disklabel64`, the DragonFly partition table, what steps allowed GRUB to
-load the DragonFly kernel and why the same procedure is not possible on
-x86-64.
-This section describes the actual implementation carried out as part
-of the project, referring to the source code in question where applicable.
+`disklabel64`, the DragonFly partition table, and what steps allowed GRUB
+to load the DragonFly kernel.
+This section contains details of the actual implementation carried out as part
+of the project, where applicable referring to the source code in question.
 
 
 ## Making GRUB understand `disklabel64`
