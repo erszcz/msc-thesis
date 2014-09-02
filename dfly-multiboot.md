@@ -1315,7 +1315,7 @@ This makes the boot process using GRUB fully automatic and seamless from
 the GRUB prompt straight to the login shell.
 
 
-## Booting DragonFly BSD with GRUB on x86-64 {#xr:dfly-x64}
+# Booting DragonFly BSD with GRUB on x86-64 {#xr:dfly-x64}
 
 In case of the x86-64 architecture the problem of loading the kernel by
 GRUB is more complicated.
@@ -1362,7 +1362,7 @@ the only way to boot a 64 bit operating system by GRUB is by embedding
 a piece of 32 bit code into the 64 bit kernel image.
 
 
-### Embedding a 32 bit entry point into a 64 bit kernel
+## Embedding a 32 bit entry point into a 64 bit kernel
 
 Given the aforementioned limitations of GRUB and the CPU the cleanest
 possible way of loading a 64 bit kernel is by embedding some 32 bit code
