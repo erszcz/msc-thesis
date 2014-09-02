@@ -15,7 +15,7 @@ I present an implementation for the Intel 386 architecture and sketch
 a solution for the x86-64 architecture.
 I demonstrate the changes made to GRUB, a bootloader implementing
 the specification, in order to allow it to boot DragonFly BSD.
-I~also pinpoint certain issues in GRUB with respect to the x86-64 architecture.
+I~also pinpoint certain issues in GRUB with respect~to~the~x86-64~architecture.
 
 \end{abstract}
 
@@ -40,9 +40,10 @@ and running it.
 That program is called _the bootloader_ and is responsible
 for loading the operating system.
 
-Usually, a bootloader is crafted towards a particular operating system and
-hardware platform, as is the case with `loadlin`[^ft:loadlin] or LILO[^ft:lilo]
-for Linux or `loader` for systems from the BSD family.
+Usually, a bootloader is crafted towards a particular operating system
+and hardware platform, as is the case with `loadlin`[^ft:loadlin]
+or LILO[^ft:lilo] for Linux,
+or `loader` for systems from the BSD family.
 
 [^ft:loadlin]: `loadlin` was a bootloader common in the early days of Linux,
                when it was used to load the kernel from a DOS or pre-NT Windows
@@ -53,18 +54,19 @@ for Linux or `loader` for systems from the BSD family.
             see @wiki:lilo article on LILO.
 
 The multitude of problems involved in implementing a bootloader for each
-combination of an operating system and hardware platform
-as well as high coupling of the bootloader to the operating system
+combination of an operating system and hardware platform,
+as well as high coupling of the bootloader to the operating system,
 were the reasons which led @okuji2006multiboot to devise
 [the Multiboot Specification][ext:multiboot].
 The specification defines an interface between a universal bootloader and an
-operating system. One implementation of the specification is [GRUB][ext:grub] --
-the bootloader which came to existence thanks to the effort of FSF[^ft:fsf],
-and is one of the most widely used bootloaders in the FOSS
-(Free and Open Source Software) world.
-Other motives behind the specification are:
+operating system.
+One implementation of the specification is [GRUB][ext:grub] --
+one of the most widely used bootloaders in the FOSS
+(Free and Open Source Software) world,
+which came to existence thanks to the effort of FSF[^ft:fsf].
+Other motives behind the Multiboot specification are:
 
-- the reduction of effort put into crafting bootloaders for disparate
+- reduction of effort put into crafting bootloaders for disparate
   hardware platforms (much of the code for advanced
   features[^ft:pifeatures] will be platform independent),
 
@@ -94,22 +96,24 @@ supporting the Multiboot specification.
 [^ft:novamb]: See @steinberg2010nova.
 
 DragonFly BSD is an operating system based on FreeBSD,
-but with a number of different architectural and design decisions
-(scaling onto multi-core CPUs being one of them).
+but with a number of different architectural and design decisions,
+scaling onto multi-core CPUs being one of them.
 GRUB is able to boot the system via _chain loading_,
 i.e. by loading the bootloader of DragonFly BSD.
 The same technique is used to make GRUB load a Microsoft Windows system.
 
 This work describes the implementation of the Multiboot specification
-in DragonFly BSD, so that chain loading it is no longer necessary.
-The implementation was performed for x86 architecture and a sketch
-of how to perform a similar implementation for x86-64 is also presented.
+in DragonFly BSD, so that chain loading it is no longer necessary[^ft:dfly-repo].
+The implementation was performed for x86 architecture.
+A sketch of how to perform a similar implementation
+for x86-64 is also presented.
 Special care had to be taken to ensure compatibility with the existing
 booting strategy, i.e. all changes done to the kernel had to be backwards
-compatible with `dloader` (the native DragonFly BSD bootloader)
-not to break the already existing boot path.
-The work also demonstrates changes necessary to make GRUB load the DragonFly BSD
-kernel, which are now part of official GRUB code.
+compatible with `dloader` (the native DragonFly BSD bootloader),
+so as not to break the already existing boot path.
+The work also demonstrates changes necessary to GRUB to make GRUB load
+the DragonFly BSD kernel.
+These changes are now part of the official GRUB code[^ft:grub-commit].
 The following topics are elaborated on in the next sections:
 
 -   [_\ref{xr:booting-bsd}{.\ }Booting a BSD system_](#xr:booting-bsd)
@@ -118,12 +122,11 @@ The following topics are elaborated on in the next sections:
     This section should also make the need for simplification of the boot
     process obvious.
 
--   The rationale behind [_the Multiboot Specification and GRUB_](#xr:mb-grub)
-    \text{(section \ref{xr:mb-grub})}
-    which provide an abstraction over the hardware specifics an operating
-    system programmer must overcome to bootstrap the system.
-    This section shows how GRUB makes the boot process seem simpler than it
-    really is.
+-   [_\ref{xr:mb-grub}{.\ }The Multiboot Specification and GRUB_](#xr:mb-grub)
+    provides a rationale for an abstraction over the hardware specifics
+    an operating system programmer must overcome to bootstrap the system.
+    This section shows how GRUB makes the boot process seem simpler than
+    it really is.
 
 -   Section [_\ref{xr:dfly-x86}{.\ }Booting DragonFly BSD with GRUB on x86_](#xr:dfly-x86)
     provides a description of changes necessary to make the system conform
@@ -146,14 +149,20 @@ The following topics are elaborated on in the next sections:
     and how, even in the light of these differences,
     the system could be modified to work with GRUB on this architecture.
 
+[^ft:dfly-repo]: The repository with modified DragonFly BSD source code
+                 is available at [https://github.com/lavrin/DragonFlyBSD](https://github.com/lavrin/DragonFlyBSD)
+
+[^ft:grub-commit]: Code committed to the GRUB project is available at
+                   [http://git.savannah.gnu.org/cgit/grub.git/commit/?id=1e908b34a6c13ac04362a1c71799f2bf31908760](http://git.savannah.gnu.org/cgit/grub.git/commit/?id=1e908b34a6c13ac04362a1c71799f2bf31908760)
+
 
 # Booting a BSD system {#xr:booting-bsd}
 
 The contents of this section are heavily (though not entirely)
 based on the outstanding work of the authors
-of the [FreeBSD Architecture Handbook][ext:arch-handbook] [@freebsdarch];
+of the [FreeBSD Architecture Handbook][ext:arch-handbook] [@freebsdarch],
 namely on chapter
-[1. Bootstrapping and Kernel Initialization][ext:arch-handbook-boot]
+[1. Bootstrapping and Kernel Initialization][ext:arch-handbook-boot],
 and on the analysis of FreeBSD and DragonFly BSD source code.
 
 [ext:arch-handbook]: http://www.freebsd.org/doc/en/books/arch-handbook/index.html
@@ -167,17 +176,18 @@ happens -- a lot of details are omitted.
 ## BIOS
 
 The [BIOS Boot Specification][ext:biosspec] defines the behaviour
-of a PC (personal computer) just after power on when it is running
-in _real mode_.
-The real mode means that memory addresses are 20 bit wide which allows for
-addressing up to 1MiB of memory. This must be enough for all software
+of a PC (personal computer) just after power on,
+when it is running in _real mode_.
+The real mode means that memory addresses are 20 bits wide,
+which allows for addressing up to 1MiB of memory.
+This must be enough for all software
 running prior to the processor being switched to _protected mode_.
 
-The value of _instruction pointer_ register just after the boot up points
+Just after the boot up the value of the _instruction pointer_ register points
 to a memory region where BIOS and its POST (Power On Self Test) code is
 located. The last thing done by this code is the loading of 512 bytes from
-the MBR (Master Boot Record -- usually the hard drive) and running the code
-contained within them.
+the MBR (Master Boot Record -- the beginning of the hard drive)
+and running the code stored therein.
 
 [ext:biosspec]: http://www.scs.stanford.edu/nyu/04fa/lab/specsbbs101.pdf
 
@@ -185,11 +195,11 @@ contained within them.
 ## First stage: `boot0`
 
 The code contained in MBR is `boot0` - the first stage of the BSD bootloader.
-`boot0` does not know more than absolutely necessary to boot the next
-stage; it understands the partition table and can choose one of the four
+`boot0` knows nothing more than absolutely necessary to boot the next stage.
+It understands the partition table and can choose one of the four
 primary partitions to boot the later stage from.
-After the choice is done it just loads the
-first sector of that partition and runs it, i.e. it runs `boot2`[^ft:boot1].
+After this choice is done it just loads the first sector
+of the chosen partition and runs it, i.e. it runs `boot2`[^ft:boot1].
 
 [^ft:boot1]: Why not `boot1`? `boot1` actually exists.
              It is used when booting from a floppy disk,
@@ -201,10 +211,10 @@ first sector of that partition and runs it, i.e. it runs `boot2`[^ft:boot1].
 
 ## Second stage: `boot2`
 
-`boot2` is aware of the possibility of multiple hard drives in the PC;
-it also understands the file system structures.
-Its aim is to locate and run the `loader` -- the third stage of the
-bootloader which is responsible for loading the kernel.
+`boot2` is aware of the possibility of multiple hard drives in the PC
+and it also understands file system structures.
+Its aim is to locate and run the `loader` -- the third stage of the bootloader,
+which is responsible for loading the kernel.
 `boot2` also switches the CPU to the aforementioned protected mode.
 The main characteristics of this mode are 32 bit memory addresses
 and a _flat memory model_[^ft:flatmem].
@@ -226,9 +236,9 @@ and the modules).
 
 ## Third stage: `loader`
 
-The `loader` (known as `dloader` in DragonFly BSD),
-already running in the protected mode, is actually quite a
-capable piece of software.
+The `loader` (known as `dloader` in DragonFly BSD)
+is already running in protected mode and is actually quite
+a capable piece of software.
 It allows for choosing which kernel to boot, whether to
 load any extra modules, configuring the environment,
 and booting from encrypted disks.
@@ -241,17 +251,17 @@ kernel).
 
 [^ft:longmode]: Long mode is the mode of execution where the processor
                 and the programmer are at last allowed to use the full width
-                of the address bus.
-                In theory.
-                In practice, at most 48 bits of the address are actually used
-                as there is simply no need to use more with today's amounts of
-                available memory.
+                of the address bus -- in theory.
+                In practice, at most 48 bits of the address bus are actually
+                used as there is simply no need to use more with the amount
+                of memory available in a contemporary computer.
 
 
 ## x86 kernel
 
 Once loaded, the kernel must perform some initialization.
-After the basic register setup there are three operations it performs:
+After the basic register setup,
+there are three operations it performs:
 `recover_bootinfo`, `identify_cpu`, `create_pagetables`.
 
 On the Intel x86 architecture the `identify_cpu` procedure is especially
@@ -262,22 +272,22 @@ Discriminating between versions of the same chip manufactured by different
 vendors is in fact done by checking for known vendor-specific defects
 in the chip.
 
-`create_pagetables` sets up the page table and after that enables paging.
-After doing that a fake return address is pushed onto the stack and return
+`create_pagetables` sets up the page table and then enables paging.
+After that, a fake return address is pushed onto the stack and return
 to that address is performed -- this is done to switch from running
 at low linear addresses and continue running in the virtualized address space.
-Then, two more functions are called: `init386` and `mi_startup`.
+Two more functions are called afterwards: `init386` and `mi_startup`.
 `init386` does further platform dependent initialization of the chip.
-`mi_startup` is the machine independent startup routine of the kernel
-which never returns -- it finalizes the boot process.
+`mi_startup` is the machine independent startup routine of the kernel.
+This routine never returns -- it finalizes the boot process.
 
 
 ## x86-64 kernel
 
 On x86-64 initialization of the kernel is performed a bit differently
 and in fact is less of a hassle.
-As `loader` has already enabled paging as a requirement to enter
-the long mode the CPU is already running in that mode and the jump
+As `loader` has already enabled paging as a requirement to enter the long mode,
+the CPU is already running in that mode and the jump
 to the kernel code is performed in the virtual address space.
 The kernel does the platform dependent setup and calls `mi_startup`
 (the machine independent startup).
