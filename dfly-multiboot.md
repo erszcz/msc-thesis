@@ -370,6 +370,16 @@ is achievable when relying on chain loading.
 Therefore, chain loading is unsatisfactory.
 
 
+# Booting DragonFly BSD with GRUB
+
+In this section I will describe what was necessary to make GRUB understand
+`disklabel64`, the DragonFly partition table, what steps allowed GRUB to
+load the DragonFly kernel and why the same procedure is not possible on
+x86-64.
+This section describes the actual implementation carried out as part
+of the project, referring to the source code in question where applicable.
+
+
 ## Making GRUB understand `disklabel64`
 
 The module for reading `disklabel64` described in this section
