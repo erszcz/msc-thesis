@@ -1377,6 +1377,16 @@ possible way of loading a 64 bit kernel is by embedding some 32 bit code
 into the 64 bit kernel.
 This limits the choice of kernel load location to the 32 bit addressable space.
 
+\begin{figure}[htbp]
+\centering
+\includegraphics[scale=0.40]{images/mapping.png}
+\caption{Each 1GiB block of logical memory is mapped to the first 1GiB block
+         of physical memory (64 bit address space).
+         Before relocation the code executes from \emph{prereloc kernel},
+         after relocation from \emph{postreloc kernel}.}
+\label{fig:mapping}
+\end{figure}
+
 In case of DragonFly BSD this 32 bit code would realize roughly the same
 functionality as `sys/boot/pc32/libi386/x86_64_tramp.S` which is part
 of the native `dloader`:
@@ -1388,16 +1398,6 @@ of the native `dloader`:
     linked to use high logical addresses.
     Both the prerelocation and postrelocation code would run without requiring
     tricks such as the `R` prerelocation macro.
-
-    \begin{figure}[htbp]
-    \centering
-    \includegraphics[scale=0.50]{images/mapping.png}
-    \caption{Each 1GiB block of logical memory is mapped to the first 1GiB block
-             of physical memory (64 bit address space).
-             Before relocation the code executes from \emph{prereloc kernel},
-             after relocation from \emph{postreloc kernel}.}
-    \label{fig:mapping}
-    \end{figure}
 
 -   It would enable paging, enter long mode and jump to the 64 bit entry
     point of the kernel.
