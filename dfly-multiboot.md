@@ -1499,7 +1499,7 @@ of the Xv6 teaching operating system [@coxxv6] were also of considerable help.
 
 There is a number of projects revolving around the issue of bootstrapping.
 
-[Coreboot][ext:coreboot] is a BIOS firmware replacement.
+[Coreboot][ext:coreboot][^ft:coreboot] is a BIOS firmware replacement.
 It is based on the concept of _payloads_ (standalone ELF executables)
 which it loads in order to offer a specific set of functionality required
 by the software which is to run later.
@@ -1516,8 +1516,11 @@ on a personal computer by a power-user.
 
 [ext:coreboot]: http://www.coreboot.org/
 
-[UEFI][ext:uefi] (Unified Extensible Firmware Interface) is a specification of an
-interface between an operating system and a platform firmware.
+[^ft:coreboot]: http://www.coreboot.org/
+
+[UEFI][ext:uefi][^ft:uefi] (Unified Extensible Firmware Interface)
+is a\ specification of an interface between an operating system
+and a\ platform firmware.
 The initial version was created in 1998 as _Intel Boot Initiative_,
 later renamed to _Extensible Firmware Interface_.
 Since 2005 the specification is officially owned by the _Unified EFI
@@ -1525,6 +1528,8 @@ Forum_ which leads its development.
 The latest version is 2.4 approved in July 2013.
 
 [ext:uefi]: http://www.uefi.org/home/
+
+[^ft:uefi]: http://www.uefi.org/home/
 
 UEFI introduces processor architecture independence, meaning that the
 firmware may run on a number of different processor types: 32 or 64 bit
@@ -1534,8 +1539,8 @@ a 32 bit UEFI firmware can only load a 32 bit OS image.
 
 GPT (GUID Partition Table) is the new partitioning scheme used by UEFI.
 GPT is free of the MBR limitations such as number of primary partitions or
-their sizes still maintaining backwards compatibility with legacy systems
-understanding only MBR.
+their sizes, still maintaining backwards compatibility with legacy systems
+which understand only MBR.
 The maximum number of partitions on a GPT partitioned volume is 128 with
 the maximum size of a partition (and the whole disk) of 8ZiB (2^70^ bytes).
 
@@ -1555,9 +1560,9 @@ earliest version of UEFI (then known as Intel Boot Initiative) by 3 years.
 
 # Conclusions and Future Work
 
-The evolutionary development of processor architectures, requirement of
-maintaining backwards compatibility and design errors lead to a lot of
-complications for the operating system developers.
+The evolutionary development of processor architectures, requirement
+of\ maintaining backwards compatibility and design errors lead to a lot
+of\ complications for the operating system developers.
 
 However, with clever software design it is possible to abstract away most
 of the boot time peculiarities and cruft from the OS while initiatives
@@ -1582,7 +1587,7 @@ but the hallmark feature of DragonFly BSD is the HAMMER filesystem.
 Enabling GRUB to read HAMMER and boot from a HAMMER volume would be
 a major step forward.
 HAMMER2 design is described by @dillon2011hammer2, while more written word
-on the initial version of the filesystem is available from @lorch2009porting
+on\ the initial version of the\ filesystem is\ available from\ @lorch2009porting
 and @oppegaard2009evaluation.
 
 
