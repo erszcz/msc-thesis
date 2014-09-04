@@ -705,7 +705,7 @@ Please refer to @okuji2006multiboot for more details.
 However, it's not sufficient just to place the header in `locore.s`.
 Please note that the header is declared in its own `.mbheader` section
 of the object file.
-This is necessary, but not enough, to comply with the requirement of placing
+This is necessary, but not enough, to comply with the requirement of\ placing
 it in the first 8KiB of the kernel image.
 
 
@@ -776,67 +776,69 @@ program segments.
 None of these constructs could be used to precisely specify the place
 of the Multiboot header in the output kernel binary.
 
-The following is a description of tried methods.
+Below is a description of the attempts to enforce the correct offset of
+the Multiboot header in the kernel image:
 
-Placing the `.mbheader` section before the `.text` section:
+1.  Placing the `.mbheader` section before the `.text` section:
 
-```diff
-diff --git a/sys/platform/pc32/conf/ldscript.i386 \
-           b/sys/platform/pc32/conf/ldscript.i386
-index a0db817..1068ba5 100644
---- a/sys/platform/pc32/conf/ldscript.i386
-+++ b/sys/platform/pc32/conf/ldscript.i386
-@@ -21,6 +21,7 @@ SECTIONS
-   kernmxps = CONSTANT (MAXPAGESIZE);
-   kernpage = CONSTANT (COMMONPAGESIZE);
-   . = kernbase + kernphys + SIZEOF_HEADERS;
-+  .mbheader       : { *(.mbheader) }
-   .interp         : { *(.interp) } :text :interp
-   .note.gnu.build-id : { *(.note.gnu.build-id) } :text
-   .hash           : { *(.hash) }
-```
+    ```diff
+    diff --git a/sys/platform/pc32/conf/ldscript.i386 \
+               b/sys/platform/pc32/conf/ldscript.i386
+    index a0db817..1068ba5 100644
+    --- a/sys/platform/pc32/conf/ldscript.i386
+    +++ b/sys/platform/pc32/conf/ldscript.i386
+    @@ -21,6 +21,7 @@ SECTIONS
+       kernmxps = CONSTANT (MAXPAGESIZE);
+       kernpage = CONSTANT (COMMONPAGESIZE);
+       . = kernbase + kernphys + SIZEOF_HEADERS;
+    +  .mbheader       : { *(.mbheader) }
+       .interp         : { *(.interp) } :text :interp
+       .note.gnu.build-id : { *(.note.gnu.build-id) } :text
+       .hash           : { *(.hash) }
+    ```
 
-On the contrary to what one might expect,
-this had the effect of placing the `.mbheader`
-input section in the `.data` output section, which is placed _after_ the
-`.text` output section.
-That's definitely far from the initial 8KiB of the kernel binary.
+    On the contrary to what one might expect,
+    this had the effect of placing the `.mbheader`
+    input section in the `.data` output section, which is placed _after_ the
+    `.text` output section.
+    That's definitely far from the initial 8KiB of the kernel binary.
 
-Inserting the `.mbheader` section at the beginning of the `.text` section
-succeeded in the sense that the header was in fact placed before all other
-program code.
-Alas, the `.text` section itself begins far in the file, after the program
-headers, the `.interp` section and a number of sections containing
-relocation information.
+2.  Inserting the `.mbheader` section at the beginning of the `.text` section.
+    This succeeded in the sense that the header was in fact placed before
+    all other program code.
+    Alas, the `.text` section itself begins far in the file, after the program
+    headers, the `.interp` section and a number of sections containing
+    relocation information.
 
-Analysis of `readelf` and `objdump` output showed that symbol offsets from
-the beginning of the kernel image were equal to the virtual addresses
-decreased by a constant value.
-In fact, the binary was linked to use the same values for virtual
-and load addresses.
-The constant offset was equal to the value of symbol `kernbase`,
-which specifies a page aligned base address at which the kernel is loaded.
+3.  Analysis of `readelf` and `objdump` output showed that symbol offsets from
+    the beginning of the kernel image were equal to the virtual addresses
+    decreased by a constant value.
+    In fact, the binary was linked to use the same values for virtual
+    and load addresses.
+    The constant offset was equal to the value of symbol `kernbase`,
+    which specifies a page aligned base address at which the kernel is loaded.
 
-This led to an attempt at forcing the position in the output binary
-by modifying the load address of the whole `text` output segment through
-adjusting it in the `PHDRS` section of the linker script.
-This segment contained all consecutive sections up to the `.data`
-section, i.e. `.interp`, sections with relocation and symbol information
-and finally the `.text` section.
-An arbitrary address close to the beginning of the file was picked,
-but to no avail.
-As it became obvious later (when figuring out how to make GRUB understand
-what address to load the kernel at) this couldn't have worked.
+    This led to an attempt at forcing the position in the output binary
+    by modifying the load address of the whole `text` output segment through
+    adjusting it in the `PHDRS` section of the linker script.
+    This segment contained all consecutive sections up to the `.data`
+    section, i.e. `.interp`, sections with relocation and symbol information
+    and finally the `.text` section.
+    An arbitrary address close to the beginning of the file was picked,
+    but to no avail.
+    As it became obvious later (when figuring out how to make GRUB understand
+    what address to load the kernel at) this couldn't have worked.
 
-Another, still unsuccessful, approach was putting the `.mbheader` section into
-the `headers` output segment.
-Introducing a completely new program header (a.k.a. segment) was also
-tried with no success.
-This is probably explained by the message of commit e19c755[^ft:goldlinker]
-from the DragonFly BSD repository from which we can infer that `dloader`
-expects a kernel with exactly 2 loadable program segments.
-An image with more can be generated easily,
-but it won't be bootable by `dloader`.
+4.  Yet another unsuccessful approach was putting the `.mbheader`
+    section into the `headers` output segment.
+
+5.  Introducing a completely new program header (a.k.a. segment) was also
+    tried with no success.
+    This is probably explained by the message of commit e19c755[^ft:goldlinker]
+    from the DragonFly BSD repository, from which we can infer that `dloader`
+    expects a kernel with exactly 2 loadable program segments.
+    An image with more can be generated easily,
+    but it won't be bootable by `dloader`.
 
 [^ft:goldlinker]: The verbatim message is:
                   _The gold linker changed its ELF program header handling
@@ -845,36 +847,40 @@ but it won't be bootable by `dloader`.
                   The DragonFly loader wasn't expecting that and instantly
                   rebooted when trying to load a gold kernel._
 
-Finally, the trial and error process led to inserting the `.mbheader`
-section at the end of the `.interp` section.
-Section `.interp` contains a path to the program interpreter,
-i.e. a program which is run in place of the loaded binary and prepares
-it for execution[^ft:ldd].
-In case of a kernel, the path to the interpreter is just a stub
-(`/red/herring` to be exact).
-The `.interp` section is the first in the kernel image.
-Placing the `.mbheader` section after the null-terminated string
-in the `.interp` section causes no issues with accessing the interpreter
-path (if it is ever necessary) while still leading to placement
-of the Multiboot header in the first 8KiB of the kernel binary:
+6.  Finally, the trial and error process led to inserting the `.mbheader`
+    section at the end of the `.interp` section.
+    Section `.interp` contains a\ path to\ the program interpreter,
+    i.e. a program which is run in place of the loaded binary and prepares
+    it for execution[^ft:ldd].
+    In case of\ a\ kernel, the path to the interpreter is just a stub
+    (`/red/herring` to be exact).
+    The `.interp` section is the first in the kernel image.
+    Placing the `.mbheader` section after the null-terminated string
+    in the `.interp` section causes no issues with accessing the interpreter
+    path (if it is ever necessary), while still leads to placement
+    of the Multiboot header in the first 8KiB of the kernel binary.
+    This approach is illustrated below:
 
-```diff
-diff --git a/sys/platform/pc32/conf/ldscript.i386 \
-           b/sys/platform/pc32/conf/ldscript.i386
-index dc1242e..24081c9 100644
---- a/sys/platform/pc32/conf/ldscript.i386
-+++ b/sys/platform/pc32/conf/ldscript.i386
-@@ -21,8 +21,8 @@ SECTIONS
-   kernmxps = CONSTANT (MAXPAGESIZE);
-   kernpage = CONSTANT (COMMONPAGESIZE);
-   . = kernbase + kernphys + SIZEOF_HEADERS;
--  .interp         : { *(.interp) } :text :interp
-+  .interp         : { *(.interp)
-+                      *(.mbheader) } :text :interp
-   .note.gnu.build-id : { *(.note.gnu.build-id) } :text
-   .hash           : { *(.hash) }
-   .gnu.hash       : { *(.gnu.hash) }
-```
+    ```diff
+    diff --git a/sys/platform/pc32/conf/ldscript.i386 \
+               b/sys/platform/pc32/conf/ldscript.i386
+    index dc1242e..24081c9 100644
+    --- a/sys/platform/pc32/conf/ldscript.i386
+    +++ b/sys/platform/pc32/conf/ldscript.i386
+    @@ -21,8 +21,8 @@ SECTIONS
+       kernmxps = CONSTANT (MAXPAGESIZE);
+       kernpage = CONSTANT (COMMONPAGESIZE);
+       . = kernbase + kernphys + SIZEOF_HEADERS;
+    -  .interp         : { *(.interp) } :text :interp
+    +  .interp         : { *(.interp)
+    +                      *(.mbheader) } :text :interp
+       .note.gnu.build-id : { *(.note.gnu.build-id) } :text
+       .hash           : { *(.hash) }
+       .gnu.hash       : { *(.gnu.hash) }
+    ```
+
+    The approach hasn't caused any issues with the resulting binaries so far,
+    but can't be considered _the proper way_ of embedding the Multiboot header.
 
 [^ft:ldd]: On x86-64 Linux this is typically `/lib64/ld-linux-x86-64.so.2`
            while on DragonFly BSD `/usr/libexec/ld-elf.so.2`.
@@ -885,9 +891,6 @@ index dc1242e..24081c9 100644
            In case of userspace programs, the interpreter handles symbol
            relocations and lazy loads these dynamically linked shared libraries
            finalizing the linking of the program during its execution.
-
-This approach hasn't caused any issues with the resulting binaries so far,
-but can't be considered _the proper way_ of embedding the Multiboot header.
 
 
 ### Booting the 32 bit kernel
@@ -907,7 +910,7 @@ but adjusting the kernel environment may be used for multiple other purposes.
 No matter what bootloader booted the kernel,
 the entry will happen at the same address.
 However, just after entry from the bootloader the code must branch taking
-the points stated above into account.
+into account the points stated above.
 The branching should converge before calling the
 platform dependent `init386` initialization procedure.
 The rest of the system should not need to be aware of what bootloader
@@ -942,14 +945,14 @@ Program Headers:
 
 The `-l` flag tells `readelf` to list just the program headers (a.k.a. segments).
 
-`dloader` can load such a kernel just fine,
+`dloader` can load such kernel just fine,
 thanks to its algorithm for reading ELF images.
 First, it ignores the physical addresses embedded in the ELF image.
 Second, it calculates the load address based on the entry address
 stored in the image.
 
-The entry address is read from the ELF header[^ft:ehdr-entry] and then
-passed to an architecture word size aware function that will read the ELF image.
+The entry address is read from the ELF header[^ft:ehdr-entry] and then passed
+to a function aware of the architecture word size that will read the ELF image.
 The signature of this function is automatically generated using
 the `__elfN(loadimage)`[^ft:elfn-macro] macro,
 so that the same definition, written with appropriate care,
@@ -957,8 +960,8 @@ can be reused for both ELF32 and ELF64 formats.
 For ELF32 a call to this function expands to `elf32_loadimage(fp, &ef, dest)`
 [^ft:call-elf32].
 The load address is adjusted depending on the architecture[^ft:adjust-elf32].
-For ELF32 and an initial entry address equal to `0xc016c450`
-calculation of the offset evaluates to `0xffffffff40000000.`
+For ELF32 and an initial entry address equal to `0xc016c450`,
+the offset equals `0xffffffff40000000.`
 An example program header virtual address of `0xc0100000`
 offset by `0xffffffff40000000` gives `0x100000`, i.e. 1MiB -- a convenient
 low physical address to load the kernel at.
@@ -985,10 +988,10 @@ One thing to keep in mind, though, is not to introduce extra program
 headers, as `dloader` won't be able to handle it.
 
 The only thing required to adjust the load addresses is overriding the
-load address of the first output section in the linker script.
-The following sections will be just laid out linearly after the adjusted one.
-The first section is the already mentioned `.interp`.
-The introduced change is presented below:
+load address of the first output section in the linker script - the following
+sections will be just laid out linearly after the adjusted one.
+This first section is the already mentioned `.interp`.
+The introduced change then is as follows:
 
 ```diff
    kernmxps = CONSTANT (MAXPAGESIZE);
@@ -1013,7 +1016,7 @@ The `ADDR (<section>)` keyword returns the virtual address of `<section>`.
 
 Inspecting a kernel built with the adjusted linker script shows that the
 segment load addresses are in fact offset from the virtual addresses
-by a value of `0xc0000000`, i.e. the `kernbase` location.
+by\ a\ value of `0xc0000000`, i.e. the `kernbase` location.
 
 ```
 $ readelf -l /boot/kernel/kernel
@@ -1047,8 +1050,8 @@ ELF Header:
 As can be seen above, the entry point (`0xc013b040`) is specified
 as a virtual address positioned high in the memory.
 Fortunately, GRUB is capable of adjusting this value by the difference
-between the virtual and physical addresses of the segment the entry point
-is contained in (i.e. by `kernbase`)[^ft:entry-fix].
+between the virtual and physical addresses of the segment that the entry
+point is defined in (i.e. by `kernbase`)[^ft:entry-fix].
 
 [^ft:entry-fix]: See GRUB: `grub-core/loader/multiboot_elfxx.c:131`
 
@@ -1084,9 +1087,11 @@ There's no use quoting the verbatim contents of the file,
 but I'll describe the changes introduced in order to perform an entry from GRUB.
 
 Just after entering the kernel we check whether the bootloader
-that booted us is Multiboot compliant by comparing the value stored in
-`eax` register with `MULTIBOOT_BOOTLOADER_MAGIC` macro, whose value is a
-magic number defined in the Multiboot specification.
+that booted us is\ Multiboot compliant.
+This is done by comparing the value stored in `eax` register
+with `MULTIBOOT_BOOTLOADER_MAGIC` macro, whose value is\ a\ magic number
+defined in the Multiboot specification.
+The comparison is\ illustrated in the following listing:
 
 ```diff
 @@ -208,6 +232,17 @@ NON_GPROF_ENTRY(btext)
@@ -1105,21 +1110,21 @@ magic number defined in the Multiboot specification.
 +1:
 ```
 
-Unless the kernel is booted by a Multiboot compliant bootloader,
+Unless the kernel is booted by a Multiboot compliant bootloader
 we skip the newly added code block and continue
-booting along the old path (i.e. `jne 1f` -- _if not equal jump forward to
+booting along the old path (i.e.\ `jne 1f` -- _if not equal jump forward to
 local label 1_).
 
 If it is Multiboot compliant, we mark the relevant fields of the `bootinfo`
 global variable as unused by assigning to them the value of zero.
 There are two interesting constructs used in these assignments.
-The first is a C structure field access done in assembly language:
+The first is a C structure field access done in the assembly language:
 
 ```gnuassembler
     bootinfo+BI_ESYMTAB
 ```
 
-`bootinfo` is of course the address of the structure itself,
+`bootinfo` is, of course, the address of the structure itself,
 while `bi_esymtab` is one of the structure fields[^ft:struct-bootinfo].
 `BI_ESYMTAB` is a macro defined in `assym.s`, equal to the offset
 of field `bi_esymtab` in structure `struct bootinfo`.
@@ -1159,7 +1164,7 @@ Appropriately setting up the page tables (which drive the MMU translation)
 is one of the tasks performed in `locore.s`.
 Since the MMU isn't ready yet, some other mechanism of translation must
 be used to access the memory at the proper physical location -- that's the
-purpose of the `R` macro.
+purpose of\ the\ `R`\ macro.
 Code intended to run after relocation[^ft:relocation] does not use
 the macro anymore.
 
@@ -1200,19 +1205,19 @@ interactive, i.e. since the `struct bootinfo` fields were zeroed,
 the kernel was unable to find a root device and mount the root
 filesystem at `/`.
 This led to a prompt being displayed at boot time,
-requiring to specify the device to be mounted as root.
+asking for the device to be mounted as `/`.
 Except for that, the system turned out to be fully functional.
 
 
 ### Mounting the root file system
 
 `dloader` is capable of preparing the kernel environment before booting
-the kernel. In fact, it's got a Forth interpreter built in,
+the kernel. In fact, it has a Forth interpreter built in,
 what makes it capable of performing some complicated tasks.
 Most of the time, though, `dloader` is simply used for parameterizing
 the functioning of some kernel subsystem, device driver or network stack.
-Setup of the kernel might also involve basic things like choosing the root
-device.
+Setup of the kernel might also involve basic things,
+like choosing the root device.
 However, the kernel environment
 is essentially just a simple key-value storage space,
 where keys and values are zero-terminated strings whose meaning is left for
@@ -1228,9 +1233,9 @@ formatted according to the below scheme:
 kernel key1=val1 key2=val2 ...
 ```
 
-Interpreting such a command line, however, requires some logic in the
-kernel aware of the convention. The logic could populate the kernel
-environment just as `dloader` would do.
+Interpreting such a command line, however, requires the kernel to have some
+logic aware of the convention.
+This logic could populate the kernel environment just as `dloader` would do.
 
 This code, though still coupled to the particulars of the bootloader
 which booted the kernel, is definitely out of scope of `locore.s`.
@@ -1241,13 +1246,13 @@ As described in the previous section, the contents of the command line
 passed by GRUB are stored safely into kernel memory in `locore.s`.
 However, the command line contents aren't interpreted until later in the
 boot process. Choosing the exact moment is a bit tricky. On the one hand,
-the support mechanism of the dynamic kernel environment must be setup already,
+the support mechanism of the dynamic kernel environment must already be setup,
 on the other hand, the interpretation must be performed as early as possible,
 since other initializing subsystems might depend on the information passed
 on the command line.
 
-Fortunately, there exists a subsystem initialization mechanism with
-sophisticated priority management in the DragonFly BSD kernel already.
+Fortunately, in the DragonFly BSD kernel there already exists a subsystem
+initialization mechanism with sophisticated priority management.
 Below is a glimpse of the priority setting definitions:
 
 ```C
@@ -1273,8 +1278,8 @@ intervals in order to leave room for introducing new subsystems in between
 the existing ones.
 Kernel subsystems, defined in multiple files around the source code tree,
 define the points at which they expect to be initialized.
-Using a declaration instead of direct control flow passing from one
-subsystem to the next guarantees loose coupling between the components,
+Using a declaration, instead of direct control flow passing from one
+subsystem to the next, guarantees loose coupling between the components,
 but still maintains the proper relative order of their initialization.
 Subsystems loaded dynamically as kernel modules are also taken into account
 when determining the subsystem initialization order.
@@ -1314,11 +1319,11 @@ for each `key=val` entry on the command line.
 Malformed entries (i.e. not containing an equal sign `=`) are ignored.
 
 This way, given GRUB passes a valid value for `vfs.root.mountfrom`
-(e.g. `vfs.root.mountfrom=ufs:/dev/ad0s1a`) the code responsible for mounting
+(e.g. `vfs.root.mountfrom=ufs:/dev/ad0s1a`), the code responsible for mounting
 the root file system in `sys/kern/vfs_conf.c` is aware of the device to be used
 for that purpose.
-This makes the boot process using GRUB fully automatic and seamless from
-the GRUB prompt straight to the login shell.
+This makes the boot process using GRUB fully automatic and seamless,
+from the GRUB prompt straight to the login shell.
 
 
 \newpage
@@ -1366,7 +1371,7 @@ before setting up the page table hierarchy and relocating.
 
 Since GRUB doesn't enter long mode and can't make use of 64 bit addressing,
 no matter whether the architecture allows for that with or without paging,
-the only way to boot a 64 bit operating system by GRUB is by embedding
+the only way to boot a\ 64\ bit operating system by GRUB is by embedding
 a piece of 32 bit code into the 64 bit kernel image.
 
 
@@ -1392,7 +1397,7 @@ functionality as `sys/boot/pc32/libi386/x86_64_tramp.S` which is part
 of the native `dloader`:
 
 -   It would set a preliminary memory mapping.
-    Each (without loss of generality 1GiB in size) block of logical memory would
+    Each block of logical memory (without loss of generality 1GiB in size) would
     point to the first block of physical memory (see figure \ref{fig:mapping}).
     That way the kernel could be loaded to low physical memory but still be
     linked to use high logical addresses.
@@ -1404,18 +1409,18 @@ of the native `dloader`:
 
 One problem with this approach is that there would be two distinct entry
 points to the kernel: one for `dloader`, which is capable of booting the
-kernel straight into long mode, and another for protected mode only GRUB.
+kernel straight into long mode, and another for GRUB with protected mode only.
 That would require using the _a.out kludge_, i.e. apart from embedding the
 Multiboot header into the kernel image, embedding some extra fields which
 would override the meta information already stored in the ELF headers.
 As the names suggests, the technique is hardly elegant,
-but in case of two possible entry points might be unavoidable.
-In other words, the _a.out kludge_ is another way apart from ELF headers
-GRUB is able to use to read the metadata from the loaded file.
+but might be unavoidable in case of two different entry points.
+In other words, the _a.out kludge_ is\ another way,
+apart from reading an ELF header, for GRUB to read metadata from a loaded file.
 
 Implementation of this approach was tried during the project,
-but due to the involved complexity and limited amount of time
-was not successful. This path is open for pursuing in the future.
+but due to the involved complexity and limited amount of time,
+was not finalized. This\ path is\ open for pursuing in\ the\ future.
 
 
 \newpage
@@ -1436,7 +1441,7 @@ TODO: insert references to books/articles on the tools used
 
 Well... not really. Thankfully, the days when kernel debugging was done
 using a serial printer plugged into a spare headless PC and a core dump
-meant a reboot are gone now thanks to virtualization.
+meant a reboot are now gone thanks to virtualization.
 
 The tools I used for virtualization are VirtualBox and QEMU with Linux
 KVM (Kernel-based Virtual Machine).
@@ -1559,12 +1564,12 @@ of the boot time peculiarities and cruft from the OS while initiatives
 like the Multiboot Specification and UEFI provide a clean interface for
 new and existing OS implementations.
 
-Implementation of the GRUB and DragonFly BSD interoperability described
-herein was done for the x86 platform of DragonFly BSD.
+Implementation of the Multiboot Specification in DragonFly BSD,
+described herein, was done for the x86 platform.
 Based on the finding by @tigeot-on-stats that
-*80.15% of downloaded packages are for the amd64/x86_64 architecture*
-it was decided that the x86 platform will be dropped in near future, though
-the exact release when that will happen hasn't been decided yet.
+*80.15% of downloaded packages are for the amd64/x86_64 architecture*,
+it was decided that the x86 platform will be dropped in near future,
+though the exact release in which this will happen has not been decided yet.
 
 In this light, implementing the GRUB -- DragonFly BSD interoperability,
 either according to the scenario described in one of the previous sections
