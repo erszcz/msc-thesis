@@ -1572,6 +1572,13 @@ operating systems - neither FOSS nor commercial.
 
 [^ft:uboot]: http://www.denx.de/wiki/U-Boot/
 
+Last but not least, I feel obliged to mention the article by @vidal2007netbsd,
+entitled _Making NetBSD Multiboot-Compatible_,
+which was one of the main inspirations of this project.
+While the idea described in that article is generally the same as pursued
+in my project, none of the implementation could be reused due to
+differences between DragonFly BSD and NetBSD at the source code level.
+
 
 \newpage
 
