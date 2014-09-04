@@ -1555,6 +1555,23 @@ beginning.
 The earliest version of the Multiboot Specification also predates the
 earliest version of UEFI (then known as Intel Boot Initiative) by 3 years.
 
+[Das U-Boot][ext:uboot][^ft:uboot] is another, apart from GRUB,
+open source bootloader, though targeted mainly at embedded devices.
+Thanks to specific architecture, Das\ U-Boot is capable of supporting
+a\ multitude of hardware devices from the same mainline code base - this
+feature was developed in order to avoid proliferation of forks of the code
+just for the sake of supporting more and more device.
+Das\ U-Boot, like GRUB, is able to run as a Coreboot payload.
+@yaghmour2003building states that _though there are quite a\ few other
+bootloaders,_ Das U-Boot, _the universal bootloader, is arguably the richest,
+most flexible, and most actively developed open source bootloader available._
+However, it is not the default bootloader of any of the big Unix-like
+operating systems - neither FOSS nor commercial.
+
+[ext:uboot]: http://www.denx.de/wiki/U-Boot/
+
+[^ft:uboot]: http://www.denx.de/wiki/U-Boot/
+
 
 \newpage
 
