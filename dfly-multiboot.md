@@ -1585,36 +1585,61 @@ differences between DragonFly BSD and NetBSD at the source code level.
 
 # Conclusions and Future Work
 
-The evolutionary development of processor architectures, requirement
-of\ maintaining backwards compatibility and design errors lead to a lot
-of\ complications for the operating system developers.
+Implementation of two significant pieces of code was carried out as part
+of\ this\ project:
 
-However, with clever software design it is possible to abstract away most
-of the boot time peculiarities and cruft from the OS while initiatives
-like the Multiboot Specification and UEFI provide a clean interface for
-new and existing OS implementations.
+- a GRUB module for reading `disklabel64` partition tables,
+  which is merged into GRUB mainline,
+
+- support for booting the x86 variant of DragonFly BSD by GRUB,
+  which does not interfere with the previously existent boot path.
 
 Implementation of the Multiboot Specification in DragonFly BSD,
 described herein, was done for the x86 platform.
 Based on the finding by @tigeot-on-stats that
 *80.15% of downloaded packages are for the amd64/x86_64 architecture*,
-it was decided that the x86 platform will be dropped in near future,
+it was decided that the x86 platform will be dropped in the future,
 though the exact release in which this will happen has not been decided yet.
 
-In this light, implementing the GRUB -- DragonFly BSD interoperability,
+No special care was taken to ensure proper loading and functioning
+of\ loadable kernel modules (also know as `.ko` files - _kernel objects_).
+It is possible that the mechanism works transparently due to the changes
+already introduced to the kernel.
+This issue needs further attention and possibly development\ effort.
+
+Implementing the GRUB -- DragonFly BSD interoperability for x86-64,
 either according to the scenario described in one of the previous sections
-or by extending Multiboot and GRUB to allow loading ELF64 kernels natively,
+or by extending Multiboot and GRUB to allow for loading ELF64 kernels natively,
 is an open field for future work.
 
-The current implementation is only capable of loading the DragonFly BSD
+The current implementation for x86 is only capable of loading the DragonFly BSD
 kernel from a UFS filesystem,
 but the hallmark feature of DragonFly BSD is the HAMMER filesystem.
 Enabling GRUB to read HAMMER and boot from a HAMMER volume would be
 a major step forward.
-HAMMER2 design is described by @dillon2011hammer2, while more written word
-on\ the initial version of the\ filesystem is\ available from\ @lorch2009porting
-and @oppegaard2009evaluation.
+HAMMER2 design is described by @dillon2011hammer2,
+while @lorch2009porting and @oppegaard2009evaluation wrote more
+on\ the first version of the\ filesystem.
 
+Interoperability between GRUB and UEFI firmware is an interesting topic
+due to the _Secure Boot_ protocol defined by UEFI 2.2.
+The protocol requires UEFI firmware to load and pass control only to\ software
+which has an acceptable cryptographically strong digital signature.
+The protocol was criticized as a possible tool for vendor lock in,
+which could make it impossible to install open source operating systems
+side by side to proprietary ones on machines with UEFI firmware.
+Different approaches to signing a kernel and a bootloader of a system
+are possible, but in case of FOSS operating systems all include the use
+of\ a\ _shim_ - a small bootloader signed with a\ valid certificate,
+which then loads another bootloader -- usually non-signed GRUB.
+It's an open question whether to sign kernel images and modules of
+an\ operating system: signing improves security of the boot process, but makes
+it impossible to recompile the kernel by the end user.
+There exist examples of both policies -- signing and non-signing -- in the
+Linux world: Fedora Linux kernels and modules are cryptographically signed,
+while kernels shipped with Ubuntu are not.
+Devising a rational policy for using UEFI, secure boot, GRUB and DragonFly
+BSD is an interesting field of endeavour.
 
 <!--
 
