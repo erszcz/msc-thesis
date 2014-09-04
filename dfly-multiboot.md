@@ -388,19 +388,19 @@ of the project, where applicable referring to the source code in question.
 ## Making GRUB understand `disklabel64`
 
 The module for reading `disklabel64` described in this section
-[is already included in GRUB][ext:grub-dfly].
+[is already included in GRUB][ext:grub-dfly][^ft:grub-commit].
 That is one of the main contributions of this work.
 
 [ext:grub-dfly]: http://git.savannah.gnu.org/cgit/grub.git/commit/?id=1e908b34a6c13ac04362a1c71799f2bf31908760
 
-One of the things a bootloader does is understanding the disk
+One of the things a bootloader needs is understanding of the disk
 layout of the machine it is written for -- the partition table and file system
 on which the files of the operating system are stored.
 
 Traditionally, systems of the BSD family (along with Solaris, back in the
 day called SunOS) used the `disklabel` partitioning layout.
 Unfortunately, DragonFly BSD has diverged in this area from the main tree.
-It introduced a new partition table layout called `disklabel64` which
+It introduced a new partition table layout called `disklabel64`, which
 shares the basic concepts of `disklabel` but also introduces some
 incompatibilities:
 
@@ -433,13 +433,13 @@ Depending on the module type (file system, partition table, system loader, etc)
 it must implement a specific interface.
 
 The module is compiled as a standalone object (`.o`) file and depending on
-the build configuration options either statically linked with the GRUB image
-or loaded on demand during the boot up sequence from a preconfigured location.
+the build configuration options, either statically linked with the GRUB image
+or loaded on demand from a preconfigured location during the boot up sequence.
 
 As the `disklabel64` format is not described anywhere in the form
-of written documentation the GRUB implementation was closely based
+of written documentation, the GRUB implementation was closely based
 on the original header file found in the DragonFly BSD
-source tree (`sys/disklabel64.h`) and the behaviour of the userspace
+source tree (`sys/disklabel64.h`) and on the behaviour of the userspace
 utility program `disklabel64`.
 
 
@@ -530,12 +530,12 @@ struct grub_partition_disklabel64
 };
 ```
 
-As can be seen from the above listing, only fields strictly necessary
+As can be seen in the above listing, only fields strictly necessary
 to enable read support of the disklabel are included in the structure
 definition.
-This is due to two guides -- the limitations of the embedded environment
-that GRUB is running in, and the design decision that GRUB ought not to have
-write support of any on-disk data for safety and security reasons.
+This is due to two principles -- the limitations of the embedded environment
+that GRUB is running in, and the design decision that for safety and security
+reasons GRUB ought not to have write support for any on-disk data.
 
 The second structure is a disklabel entry, i.e. a description of a
 single partition:
@@ -568,13 +568,13 @@ This function is called in a loop implemented in GRUB framework code.
 
 In general, GRUB is able to handle nested partition tables,
 which are quite common on the personal computer (PC) x86 architecture.
-It's customary, that a PC drive is partitioned using an MS-DOS partition table,
+It's customary that a PC drive is partitioned using an MS-DOS partition table,
 which supports up to 4 primary partitions and significantly more logical
 partitions on an extended partition.
 
-A bare disk would be referred to as `(hd0)` by GRUB; the second MS-DOS
-partition on a disk as `(hd0,msdos2)` (please note that disks are
-counted from 0 while partitions from 1),
+A bare disk would be referred to as `(hd0)` by GRUB.
+The second MS-DOS partition on a disk as `(hd0,msdos2)` (please note
+that disks are counted from 0 while partitions from 1),
 while the first DragonFly BSD subpartition of that MS-DOS
 partition as `(hd0,msdos2,dfly1)`.
 
@@ -590,7 +590,7 @@ as in the `(hd0,msdos2,dfly1)` example.
 
 The tests for automatic partition table and file system discovery,
 located in `tests/` directory of GRUB source tree, rely on GNU Parted.
-Being a partitioning utility, Parted, unlike GRUB, supports full read
+Being a partitioning utility Parted, unlike GRUB, supports full read
 and write access to a number of partition table and file system formats.
 Unfortunately, `disklabel64` is not one of them.
 In order to enable automatic tests of the `part_dfly` module it was necessary
@@ -610,7 +610,7 @@ and involves the following steps:
 - once in the kernel, interpreting the information passed in by GRUB
   and performing any relevant setup to successfully start up the system.
 
-However, things get hairy when we get to the details.
+However, things get difficult when we get to the details.
 The foremost issue is compatibility with the existing booting strategy.
 In other words, all changes done to the kernel must be backwards
 compatible with `dloader`, so as not to break the already existing boot path.
@@ -647,16 +647,16 @@ that the kernel uses the AT&T assembler syntax[^ft:att].
 [^ft:att]: @ritchie1974unix developed UNIX when working
            at AT&T Bell Laboratories.
 
-The low level architecture dependent parts of the kernel are
+The low level, architecture dependent parts of the kernel are
 in `sys/platform/pc32` and `sys/platform/pc64` subdirectories
 of the system source tree.
 
-`sys/platform/pc32/i386/locore.s` is an assembly file defining the entry point
-to the x86 kernel.
+The entry point to the x86 kernel is defined in assembly
+in file `sys/platform/pc32/i386/locore.s`.
 It's format may seem a bit strange at first,
 since it's the AT&T syntax assembly mixed with C preprocessor directives.
 Deciphering some definitions and rules from `sys/conf/kern.pre.mk` leads
-to the general command the file is processed with:
+to the general command such files are processed with:
 
 ```bash
 gcc -x assembler-with-cpp -c sys/platform/pc32/i386/locore.s
@@ -695,7 +695,7 @@ The header itself consists of 3 fields, each 4 bytes wide:
 
 - the Multiboot header magic number: 0x1BADB002,
 - flags which state what the kernel expects from the bootloader,
-- a checksum which when added to the other header fields,
+- a checksum which when added to the other header fields
   must have a 32-bit unsigned sum of zero.
 
 These values are sufficient for GRUB to recognize the kernel image
@@ -729,9 +729,9 @@ The same authors also inform that GNU `ld` accepts Linker Command Language
 files written in a superset of AT&T’s Link Editor Command Language syntax,
 which ought to provide explicit and total control over the linking process.
 
-In the light of this _total control_ which decides _where everything goes
-in the output file_, one might think that making the linker place the Multiboot
-header at the beginning of the output file is a simple matter.
+In the light of this stated _total control_, which decides _where everything
+goes in the output file_, one might think that making the linker place
+the Multiboot header at the beginning of the output file is a simple matter.
 The experience gained from this project is exactly the opposite.
 
 The behaviour of GNU `ld`, the linker used by DragonFly BSD,
@@ -744,8 +744,8 @@ do the right thing_.
 Unfortunately, that's not the case for kernel development.
 There are several reasons for using a custom linker script for the kernel.
 
-One of them is portability among different architectures and compiler
-vendors which is needed for bootstrapping.
+One of them is portability among different architectures and compiler vendors,
+which is needed for bootstrapping.
 In order to be able to build the kernel on a different OS,
 the linker script must be compatible with the platform's compiler which
 might emit different output than the native compiler of DragonFly BSD.
@@ -760,7 +760,7 @@ Examples of such symbols are `edata` or `end` meaning, respectively,
 the end of the `.data` section and of the kernel binary.
 In a userspace program there's no (or little) use for such symbols,
 but the kernel uses them for calculating the offset and size
-of the `.bss`[^ft:bss] section which the it must initialize itself.
+of the `.bss`[^ft:bss] section which it must initialize itself.
 
 [^ft:bss]: `.bss` is a traditional name of a section in the object file
             containing uninitialized data; since this data has no
