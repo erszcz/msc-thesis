@@ -1555,12 +1555,13 @@ beginning.
 The earliest version of the Multiboot Specification also predates the
 earliest version of UEFI (then known as Intel Boot Initiative) by 3 years.
 
-[Das U-Boot][ext:uboot][^ft:uboot] is another, apart from GRUB,
+[Das U-Boot][ext:uboot][^ft:uboot] is another, along with GRUB,
 open source bootloader, though targeted mainly at embedded devices.
+The range of architectures it supports is much wider than in the case of GRUB.
 Thanks to specific architecture, Das\ U-Boot is capable of supporting
 a\ multitude of hardware devices from the same mainline code base - this
 feature was developed in order to avoid proliferation of forks of the code
-just for the sake of supporting more and more device.
+just for the sake of supporting more and more devices.
 Das\ U-Boot, like GRUB, is able to run as a Coreboot payload.
 @yaghmour2003building states that _though there are quite a\ few other
 bootloaders,_ Das U-Boot, _the universal bootloader, is arguably the richest,
@@ -1574,7 +1575,7 @@ operating systems - neither FOSS nor commercial.
 
 Last but not least, I feel obliged to mention the article by @vidal2007netbsd,
 entitled _Making NetBSD Multiboot-Compatible_,
-which was one of the main inspirations of this project.
+which was one of the main inspirations for this project.
 While the idea described in that article is generally the same as pursued
 in my project, none of the implementation could be reused due to
 differences between DragonFly BSD and NetBSD at the source code level.
