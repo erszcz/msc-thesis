@@ -1490,7 +1490,7 @@ The book by @seyfarth2011introduction was a great help in putting these down.
 
 The 6.828: Operating System Engineering course material from MIT [@mitpdosos],
 as well as the source code and its commentary
-of the Xv6 teaching operating system [@coxxv6] were also of considerable help.
+of the Xv6 teaching operating system [@coxxv6] were also of\ considerable\ help.
 
 
 \newpage
@@ -1538,14 +1538,14 @@ However, the OS system must size-match the firmware of the platform, i.e.
 a 32 bit UEFI firmware can only load a 32 bit OS image.
 
 GPT (GUID Partition Table) is the new partitioning scheme used by UEFI.
-GPT is free of the MBR limitations such as number of primary partitions or
-their sizes, still maintaining backwards compatibility with legacy systems
+GPT\ is\ free of\ the MBR limitations such as number of primary partitions
+or\ their sizes, still maintaining backwards compatibility with legacy systems
 which understand only MBR.
 The maximum number of partitions on a GPT partitioned volume is 128 with
 the maximum size of a partition (and the whole disk) of 8ZiB (2^70^ bytes).
 
-In essence, UEFI is similar to the Multiboot Specification addressing the
-same limitations of the BIOS and conventional bootloaders.
+In essence, UEFI is similar to the Multiboot Specification as it addresses
+the same limitations of the BIOS and conventional bootloaders.
 However, the Multiboot Specification was intended to provide a solution
 which could be retrofitted onto already existent and commonly used hardware,
 while UEFI is aimed at deployment on newly manufactured hardware.
