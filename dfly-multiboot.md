@@ -7,12 +7,11 @@ documentclass: scrartcl
 
 \begin{abstract}
 
-I~describe the Multiboot Specification which provides an interface between
-a bootloader and an operating system and how DragonFly BSD,
-a~mature UNIX-derived operating system, can be modified to conform
-to that specification.
-I present an implementation for the Intel 386 architecture and sketch
-a solution for the x86-64 architecture.
+I~describe how DragonFly BSD, a~mature UNIX-derived operating system,
+can be modified to conform to the Multiboot Specification,
+which provides a uniform interface between a bootloader and an operating system.
+In particular, I present an implementation for the Intel 386 architecture
+and sketch a solution for the x86-64 architecture.
 I demonstrate the changes made to GRUB, a bootloader implementing
 the specification, in order to allow it to boot DragonFly BSD.
 I~also pinpoint certain issues in GRUB with respect~to~the~x86-64~architecture.
@@ -111,7 +110,7 @@ Special care had to be taken to ensure compatibility with the existing
 booting strategy, i.e. all changes done to the kernel had to be backwards
 compatible with `dloader` (the native DragonFly BSD bootloader),
 so as not to break the already existing boot path.
-The work also demonstrates changes necessary to GRUB to make GRUB load
+The work also demonstrates changes needed in GRUB to make it load
 the DragonFly BSD kernel.
 These changes are now part of the official GRUB code[^ft:grub-commit].
 The following topics are elaborated on in the next sections:
@@ -119,8 +118,8 @@ The following topics are elaborated on in the next sections:
 -   [_\ref{xr:booting-bsd}{.\ }Booting a BSD system_](#xr:booting-bsd)
     gives an approachable introduction to the boot process of a BSD-like
     operating system on the Intel x86 architecture.
-    This section should also make the need for simplification of the boot
-    process obvious.
+    This section should also make obvious the need for simplification
+    of the boot process.
 
 -   [_\ref{xr:mb-grub}{.\ }The Multiboot Specification and GRUB_](#xr:mb-grub)
     provides a rationale for an abstraction over the hardware specifics
@@ -1296,8 +1295,8 @@ SYSINIT(multiboot_setup_kenv, SI_SUB_ROOT_CONF, SI_ORDER_MIDDLE,
 ```
 
 The `SYSINIT` macro is used to define the subsystem name
-(`multiboot_setup_kenv`), initialization order
-(`SI_SUB_ROOT_CONF` and `SI_ORDER_MIDDLE`)
+(in the example above: `multiboot_setup_kenv`),
+initialization order (`SI_SUB_ROOT_CONF` and `SI_ORDER_MIDDLE`)
 and initialization function (again `multiboot_setup_kenv`).
 Please note that this initialization step must be done between
 `SI_BOOT1_POST` and `SI_SUB_MOUNT_ROOT`.
@@ -1435,19 +1434,19 @@ TODO: insert references to books/articles on the tools used
 > you've written a few normal programs to run as
 > processes, and now you want to get to where the
 > real action is, to where a single wild pointer can
-> wipe out your file system and a core dump means a reboot._
+> wipe out your file system and a core dump means a\ reboot._
 >
 > – @salzman2001linux, The Linux Kernel Module Programming Guide
 
-Well... not really. Thankfully, the days when kernel debugging was done
+Well... not really. The days when kernel debugging was done
 using a serial printer plugged into a spare headless PC and a core dump
-meant a reboot are now gone thanks to virtualization.
+meant a reboot are now gone, thanks to virtualization.
 
 The tools I used for virtualization are VirtualBox and QEMU with Linux
 KVM (Kernel-based Virtual Machine).
-Although the work was started using a VirtualBox virtual machine I had
-to switch to QEMU/KVM in the middle of the project because of VirtualBox
-not supporting debugging with GNU gdb.
+Although the work was started using a VirtualBox virtual machine,
+I had to switch to QEMU/KVM in the middle of the project because VirtualBox
+does not support debugging with GNU gdb.
 Moreover, the 32 bit and 64 bit systems had to use separate virtual machines,
 so all the work with virtual machine management and system installation and setup
 had to be done twice.
@@ -1458,18 +1457,18 @@ relocation (just after being loaded by the bootloader) the kernel operates
 from a physical address,
 most of the debugging had to be done by setting breakpoints at manually
 calculated physical addresses instead of using symbol names.
-The process was arduous, very error prone and consumed a lot of time.
+The process was arduous, error prone and consumed a lot of time.
 
-The main piece of software worked on during the project was DragonFly BSD.
-@hsudfly introduces the system well and points out some of its differences
-from the parent FreeBSD.
+The main piece of software I worked on during the project was DragonFly BSD.
+@hsudfly introduces the system well and points out some of the differences
+from its parent, FreeBSD.
 Just to name a few features which stand out:
 
 - DragonFly BSD tries to scale linearly on modern multi-core CPUs
   by multiplication of certain subsystems and data structures (e.g. the
   scheduler, memory allocator, ...) onto all cores and using non-blocking
   algorithms where possible,
-  what allows for mostly asynchronous operation of all cores,
+  which allows for mostly asynchronous operation of all cores,
 
 - HAMMER (and upcoming HAMMER2) filesystem,
   whose feature list is too long to quote here,
@@ -1478,19 +1477,21 @@ Just to name a few features which stand out:
 
 - Swapcache, which is an extension to the well-known swap partition mechanism;
   the feature allows an SSD swap partition to cache any filesystem operation(s)
-  in order to speed up file systems stored on non-SSD devices.
+  in order to speed up file systems stored on\ non-SSD devices.
 
-All the operations on the kernel image and verification of
-changes in the linker script had to be checked by inspecting the resulting file.
-The utilities for these tasks are `readelf` and `objdump` which come from
-the GNU binutils package.
+All the modifications to the kernel image and verification
+of\ changes in the linker script had to be checked by inspecting
+the resulting image file.
+The\ utilities for these tasks are `readelf` and `objdump`,
+which come from the GNU binutils package.
 
-Of course, parts of the code written during this project are 64 bit assembly.
+Parts of the code written during this project are 64 bit assembly.
 The book by @seyfarth2011introduction was a great help in putting these down.
 
-The 6.828: Operating System Engineering course material from MIT [@mitpdosos],
-as well as the source code and its commentary
-of the Xv6 teaching operating system [@coxxv6] were also of\ considerable\ help.
+The _6.828: Operating System Engineering_ course material from MIT [@mitpdosos],
+as well as the source code (along with commentary)
+of Xv6, a\ simple, educational operating system [@coxxv6],
+were also of\ considerable\ help.
 
 
 \newpage
@@ -1501,18 +1502,19 @@ There is a number of projects revolving around the issue of bootstrapping.
 
 [Coreboot][ext:coreboot][^ft:coreboot] is a BIOS firmware replacement.
 It is based on the concept of _payloads_ (standalone ELF executables)
-which it loads in order to offer a specific set of functionality required
-by the software which is to run later.
+that are loaded in order to offer a specific set of functionality required
+by the software that is to be run later.
 The usual payload is Linux, but there is a number of others available:
 SeaBIOS (offering traditional BIOS services), iPXE/gPXE/Etherboot (for
 booting over a network) or GNU GRUB.
-Thanks to the number of payloads Coreboot is able to load most PC
-operating systems.
+Thanks to the number of payloads,
+Coreboot is able to load most PC operating systems.
 
-Coreboot has a broad range of capabilities but as a firmware replacement
+Coreboot has a broad range of capabilities, but as a firmware replacement
 it is intended for use by hardware manufacturers in their products
-(motherboards or systems-on-chip) in contrast to GRUB which is installable
-on a personal computer by a power-user.
+(motherboards or systems-on-chip).
+This contrasts with GRUB,
+which is installable on a personal computer by a power-user.
 
 [ext:coreboot]: http://www.coreboot.org/
 
@@ -1524,7 +1526,7 @@ and a\ platform firmware.
 The initial version was created in 1998 as _Intel Boot Initiative_,
 later renamed to _Extensible Firmware Interface_.
 Since 2005 the specification is officially owned by the _Unified EFI
-Forum_ which leads its development.
+Forum_, which leads its development.
 The latest version is 2.4 approved in July 2013.
 
 [ext:uefi]: http://www.uefi.org/home/
@@ -1534,15 +1536,16 @@ The latest version is 2.4 approved in July 2013.
 UEFI introduces processor architecture independence, meaning that the
 firmware may run on a number of different processor types: 32 or 64 bit
 alike.
-However, the OS system must size-match the firmware of the platform, i.e.
+However, the OS system must match the firmware of the platform, i.e.
 a 32 bit UEFI firmware can only load a 32 bit OS image.
 
 GPT (GUID Partition Table) is the new partitioning scheme used by UEFI.
-GPT\ is\ free of\ the MBR limitations such as number of primary partitions
-or\ their sizes, still maintaining backwards compatibility with legacy systems
-which understand only MBR.
-The maximum number of partitions on a GPT partitioned volume is 128 with
-the maximum size of a partition (and the whole disk) of 8ZiB (2^70^ bytes).
+GPT\ is\ free of\ the MBR limitations, such as number of primary partitions
+or\ their sizes, but it still maintains backward compatibility with legacy
+systems which understand only MBR.
+The maximum number of partitions on a GPT partitioned volume is 128,
+with the maximum size of a partition (and the whole disk)
+being 8ZiB (2^70^ bytes).
 
 In essence, UEFI is similar to the Multiboot Specification as it addresses
 the same limitations of the BIOS and conventional bootloaders.
@@ -1550,15 +1553,15 @@ However, the Multiboot Specification was intended to provide a solution
 which could be retrofitted onto already existent and commonly used hardware,
 while UEFI is aimed at deployment on newly manufactured hardware.
 The Multiboot Specification is also a product of the Free Software
-community in contrast to the UEFI which was commercially backed from the
-beginning.
+community in contrast with UEFI,
+which was commercially backed from the beginning.
 The earliest version of the Multiboot Specification also predates the
 earliest version of UEFI (then known as Intel Boot Initiative) by 3 years.
 
-[Das U-Boot][ext:uboot][^ft:uboot] is another, along with GRUB,
-open source bootloader, though targeted mainly at embedded devices.
+[Das U-Boot][ext:uboot][^ft:uboot] is another open source bootloader,
+though targeted mainly at embedded devices.
 The range of architectures it supports is much wider than in the case of GRUB.
-Thanks to specific architecture, Das\ U-Boot is capable of supporting
+Thanks to its architecture, Das\ U-Boot is capable of supporting
 a\ multitude of hardware devices from the same mainline code base - this
 feature was developed in order to avoid proliferation of forks of the code
 just for the sake of supporting more and more devices.
@@ -1585,14 +1588,14 @@ differences between DragonFly BSD and NetBSD at the source code level.
 
 # Conclusions and Future Work
 
-Implementation of two significant pieces of code was carried out as part
+Two significant pieces of code were implemented out as part
 of\ this\ project:
 
 - a GRUB module for reading `disklabel64` partition tables,
   which is merged into GRUB mainline,
 
 - support for booting the x86 variant of DragonFly BSD by GRUB,
-  which does not interfere with the previously existent boot path.
+  which does not interfere with the existing boot path.
 
 Implementation of the Multiboot Specification in DragonFly BSD,
 described herein, was done for the x86 platform.
@@ -1602,18 +1605,19 @@ it was decided that the x86 platform will be dropped in the future,
 though the exact release in which this will happen has not been decided yet.
 
 No special care was taken to ensure proper loading and functioning
-of\ loadable kernel modules (also know as `.ko` files - _kernel objects_).
+of\ loadable kernel modules (also known as `.ko` files - _kernel objects_).
 It is possible that the mechanism works transparently due to the changes
 already introduced to the kernel.
-This issue needs further attention and possibly development\ effort.
+This issue needs further attention and, possibly, development\ effort.
 
-Implementing the GRUB -- DragonFly BSD interoperability for x86-64,
-either according to the scenario described in one of the previous sections
-or by extending Multiboot and GRUB to allow for loading ELF64 kernels natively,
+Implementing the GRUB -- DragonFly BSD interoperability for x86-64
 is an open field for future work.
+It can be done either according to the scenario described
+in\ one of\ the previous sections or by extending Multiboot
+and GRUB to allow for loading ELF64 kernels natively.
 
-The current implementation for x86 is only capable of loading the DragonFly BSD
-kernel from a UFS filesystem,
+The current implementation for x86 is capable of loading the DragonFly BSD
+kernel only from a UFS filesystem,
 but the hallmark feature of DragonFly BSD is the HAMMER filesystem.
 Enabling GRUB to read HAMMER and boot from a HAMMER volume would be
 a major step forward.
@@ -1624,18 +1628,18 @@ on\ the first version of the\ filesystem.
 Interoperability between GRUB and UEFI firmware is an interesting topic
 due to the _Secure Boot_ protocol defined by UEFI 2.2.
 The protocol requires UEFI firmware to load and pass control only to\ software
-which has an acceptable cryptographically strong digital signature.
+which has an acceptable, cryptographically-strong digital signature.
 The protocol was criticized as a possible tool for vendor lock in,
-which could make it impossible to install open source operating systems
-side by side to proprietary ones on machines with UEFI firmware.
-Different approaches to signing a kernel and a bootloader of a system
+as on machines with UEFI firmware it could make it impossible
+to install open source operating systems side by side with proprietary ones.
+Different approaches to signing a kernel and a system bootloader
 are possible, but in case of FOSS operating systems all include the use
 of\ a\ _shim_ - a small bootloader signed with a\ valid certificate,
 which then loads another bootloader -- usually non-signed GRUB.
 It's an open question whether to sign kernel images and modules of
 an\ operating system: signing improves security of the boot process, but makes
 it impossible to recompile the kernel by the end user.
-There exist examples of both policies -- signing and non-signing -- in the
+There are examples of both policies\ --\ signing and non-signing -- in the
 Linux world: Fedora Linux kernels and modules are cryptographically signed,
 while kernels shipped with Ubuntu are not.
 Devising a rational policy for using UEFI, secure boot, GRUB and DragonFly
