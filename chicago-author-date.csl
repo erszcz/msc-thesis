@@ -38,6 +38,22 @@
       </if>
     </choose>
   </macro>
+  <macro name="access">
+    <choose>
+      <if variable="URL">
+        <text value="Available at: "/>
+        <text variable="URL"/>
+        <group prefix=" (" suffix=")">
+          <text value="accessed "/>
+          <date variable="accessed">
+            <date-part name="year" form="long" suffix="-"/>
+            <date-part name="month" form="numeric-leading-zeros" suffix="-"/>
+            <date-part name="day" form="numeric-leading-zeros"/>
+          </date>
+        </group>
+      </if>
+    </choose>
+  </macro>
   <macro name="container-contributors">
     <choose>
       <if type="chapter">
@@ -132,20 +148,6 @@
       <text text-case="capitalize-first" variable="archive_location" />
       <text variable="archive" />
       <text variable="archive-place" />
-    </group>
-  </macro>
-  <macro name="access">
-    <group delimiter=". ">
-      <choose>
-        <if match="any" type="graphic report">
-          <text macro="archive" />
-        </if>
-        <else-if match="none" type="book thesis chapter article-journal article-newspaper article-magazine">
-          <text macro="archive" />
-        </else-if>
-      </choose>
-      <text prefix="doi:" variable="DOI" />
-      <text variable="URL" />
     </group>
   </macro>
   <macro name="title">
@@ -342,8 +344,7 @@
          entry-spacing="0"
          et-al-min="11"
          et-al-use-first="7"
-         hanging-indent="true"
-         subsequent-author-substitute="---">
+         hanging-indent="true">
     <sort>
       <key macro="contributors" />
       <key variable="issued" />
